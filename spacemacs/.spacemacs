@@ -31,10 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     yaml
      auto-completion
      emacs-lisp
-     emoji
      (erc :variables
           erc-server-list '(("irc.freenode.net"
                              :port "6697"
@@ -55,6 +53,7 @@ values."
             shell-default-term-shell "/bin/zsh")
      syntax-checking
      version-control
+     yaml
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -337,6 +336,8 @@ you should place your code here."
   ;; Disable square brackets from being interpreted as links in org-mode
   (setq org-activate-links (delq 'bracket org-activate-links))
 
+  ;; Stop the flycheck tooltips from disappearing so fast
+  (setq flycheck-pos-tip-timeout 15)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
