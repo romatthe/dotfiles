@@ -1,4 +1,4 @@
-(Require 'package)
+(require 'package)
 
 ;; Enable MELPA
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
@@ -54,12 +54,21 @@
 (eval-when-compile
   (require 'use-package))
 
-;; Install Org-Bullets for Org-Mode
+;; Install and configure Beacon-Mode
+;; Provides easy to follow cursor highlighting
+(use-package beacon
+  :ensure t
+  :config
+  (beacon-mode t))
+
+;; Install and configure Org-Bullets for Org-Mode
+;; Provides fancy-looking bullets for Org-Mode headings
 (use-package org-bullets
   :ensure t
   :hook (org-mode . org-bullets-mode))
 
-;; Install nlimum and nlinum-hl
+;; Install and configure nlinum and nlinum-hl
+;; Provides line numbers and highlighting
 (use-package nlinum
   :ensure t
   :config
@@ -70,18 +79,21 @@
   :after nlinum)
 
 ;; Install and configure Powerline
+;; Provides a fancy and useful bar above the mini-buffer
 (use-package powerline
   :ensure t
   :config
   (powerline-default-theme))
 
 ;; Install and configure restart-emacs
+;; Provides functions to restart Emacs from within Emacs
 (use-package restart-emacs
   :ensure t
   :config
   (global-set-key (kbd "C-x C-r") 'restart-emacs))
 
 ;; Install and configure Move-Text
+;; Provides functions to easily move entire lines up or down
 (use-package move-text
   :ensure t
   :config
@@ -89,6 +101,7 @@
   (global-set-key (kbd "M-S-<down>") 'move-text-down))
 
 ;; Install and configure Doom-Themes
+;; Provides hlissner's awesome themes from Doom-Emacs
 (use-package doom-themes
   :ensure t
   :config
@@ -100,6 +113,7 @@
   (doom-themes-org-config))
 
 ;; Install and configure Projectile
+;; Provides project magement functions
 (use-package projectile
   :ensure t
   :config
@@ -107,6 +121,7 @@
   (projectile-mode t))
 
 ;; Install and configure Dashboard
+;; Provides a configurable dashboard when starting Emacs
 (use-package dashboard
   :ensure t
   :config
@@ -119,6 +134,7 @@
                           ;;(registers . 5))) ;; //TODO
 
 ;; Install and configure Which-Key
+;; Provides a helpful list of other possible key combinations
 (use-package which-key
   :ensure t
   :config
@@ -126,12 +142,14 @@
   (which-key-mode))
 
 ;; Install and configure Company
+;; Provides a general-purpose completion mode with different backends
 (use-package company
   :ensure t
   :config
   (global-company-mode t))
 
 ;; Install and configure Ivy and Swiper
+;; Provides a selection narrowing framework (Ivy) and enhanced search functionality (Swiper)
 ;; The Swiper package includes Ivy
 (use-package swiper
   :ensure t
@@ -145,6 +163,7 @@
   (global-set-key (kbd "C-c C-r") 'ivy-resume))
 
 ;; Install and configure Counsel
+;; Provides a bunch of useful functions that rely on Ivy
 ;; Council is part of Ivy
 (use-package counsel
   :ensure t
@@ -156,14 +175,15 @@
   (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
 
 ;; Install and configure Counsel-Projectile
-;; This package complements Projectile by providing improved Ivy support
+;; Provides improved Ivy support for Projectile
 (use-package counsel-projectile
-  :ensure tt
+  :ensure t
   ;; :after (counsel projectile) //TODO Why won't this work when using after?
   :config
   (counsel-projectile-mode t))
 
 ;; Install and configure Web-Mode
+;; Provides a very helpful mode for editing (mixed) HTML, CSS, etc. files
 (use-package web-mode
   :ensure t
   ;; :hook flycheck-mode //TODO
@@ -182,11 +202,13 @@
   (add-to-list 'auto-mode-alist '("\\.html$" . web-mode)))
 
 ;; Install and configure YAML-Mode
+;; Provides major mode for working with YAML files
 (use-package yaml-mode
   :ensure t
   :mode (".yaml?" ".yml?"))
 
 ;; Install and configure Magit
+;; Provides a Git porcelain inside Emacs
 (use-package magit
   :ensure t
   :defer t
@@ -211,7 +233,7 @@
       (jump-to-register :magit-fullscreen))))
 
 ;; Install and configure ANSI-Color
-;; This includes a hook to use ansi-color on the *compilation* buffer
+;; Provides a hook to use ansi-color on the *compilation* buffer
 (use-package ansi-color
   :ensure t
   :hook (compilation-filter . nm/colorize-compilation) 
@@ -258,7 +280,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
+    (beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
