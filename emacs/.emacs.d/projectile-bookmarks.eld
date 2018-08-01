@@ -1,1 +1,1 @@
-("~/Source/FluentApi.QueryBuilder.Example/" "~/Source/UA-.NETStandard/")
+("~/.dotfiles/" "~/Source/FluentApi.QueryBuilder.Example/" "~/Source/UA-.NETStandard/")

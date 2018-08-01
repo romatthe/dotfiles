@@ -1,5 +1,4 @@
-
-(require 'package)
+(Require 'package)
 
 ;; Enable MELPA
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
@@ -47,10 +46,8 @@
 
 ;; Set auto-paring of braces, quotes, etc.
 (electric-pair-mode t)
-(setq electric-pair-pairs '(
-                            (?\" . ?\")
-                            (?\{ . ?\})
-                            ))
+(setq electric-pair-pairs '((?\" . ?\")
+                            (?\{ . ?\})))
 
 ;; Configure Use-Package
 (eval-when-compile
