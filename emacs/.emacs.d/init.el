@@ -28,7 +28,8 @@
 (global-set-key (kbd "<home>") 'beginning-of-line)
 (global-set-key (kbd "<end>") 'end-of-line)
 (global-set-key (kbd "RET") 'newline-and-indent)
-(global-set-key (kbd "C-d") 'kill-whole-line)
+(global-set-key (kbd "C-d") 'rm/duplicate-line)
+;; (global-set-key (kbd "C-d") 'kill-whole-line)
 (delete-selection-mode t)                           ;; Allows overwriting of the selection
 (transient-mark-mode t)                             ;; Allows for sane defaults regarding selected region
 (show-paren-mode t)                                 ;; Always highlight parens
@@ -157,7 +158,7 @@
 ;; Install and configure Counsel-Projectile
 ;; This package complements Projectile by providing improved Ivy support
 (use-package counsel-projectile
-  :ensure t
+  :ensure tt
   ;; :after (counsel projectile) //TODO Why won't this work when using after?
   :config
   (counsel-projectile-mode t))
@@ -166,7 +167,7 @@
 (use-package web-mode
   :ensure t
   ;; :hook flycheck-mode //TODO
-  :mode (".html?" ".vue$" ".css$")
+  :mode (".html?" ".vue?" ".css$")
   :config
   (setq web-mode-style-padding 2
 	web-mode-script-padding 2
@@ -179,6 +180,11 @@
 	web-mode-enable-auto-pairing t
 	web-mode-enable-auto-indentation t)
   (add-to-list 'auto-mode-alist '("\\.html$" . web-mode)))
+
+;; Install and configure YAML-Mode
+(use-package yaml-mode
+  :ensure t
+  :mode (".yaml?" ".yml?"))
 
 ;; Install and configure Magit
 (use-package magit
@@ -204,6 +210,46 @@
       (kill-buffer)
       (jump-to-register :magit-fullscreen))))
 
+;; Install and configure ANSI-Color
+;; This includes a hook to use ansi-color on the *compilation* buffer
+(use-package ansi-color
+  :ensure t
+  :hook (compilation-filter . nm/colorize-compilation) 
+  :init
+  (progn
+    (defun nm/colorize-compilation ()
+      "Colorize from `compilation-filter-start' to `point'"
+      (let ((inhibit-read-only t))
+	(ansi-color-apply-on-region
+	 compilation-filter-start (point))))))
+
+(defun rm/duplicate-line (arg)
+  "Duplicate current line, leaving point in lower line."
+  (interactive "*p")
+  ;; Save the point for undo
+  (setq buffer-undo-list (cons (point) buffer-undo-list))
+  ;; Local variables for start and end of line
+  (let ((bol (save-excursion (beginning-of-line) (point)))
+        eol)
+    (save-excursion
+      ;; Don't use forward-line for this, because you would have
+      ;; to check whether you are at the end of the buffer
+      (end-of-line)
+      (setq eol (point))
+      ;; Store the line and disable the recording of undo information
+      (let ((line (buffer-substring bol eol))
+            (buffer-undo-list t)
+            (count arg))
+        ;; Insert the line arg times
+        (while (> count 0)
+          (newline)         ;; Because there is no newline in 'line'
+          (insert line)
+          (setq count (1- count))))
+      ;; Create the undo information
+      (setq buffer-undo-list (cons (cons eol (point)) buffer-undo-list))))
+  ;; Put the point in the lowest line and return
+  (next-line arg))
+
 ;; DONT TOUCH
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -212,7 +258,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
+    (yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
