@@ -1,3 +1,5 @@
 .stack-work/
 elpa/
 emacs-backup/
+projectile-bookmarks.eld
+recentf

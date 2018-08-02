@@ -1,1 +1,0 @@
-("~/.dotfiles/" "~/Source/FluentApi.QueryBuilder.Example/" "~/Source/UA-.NETStandard/")

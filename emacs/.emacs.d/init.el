@@ -1,4 +1,5 @@
 (require 'package)
+(require 'cl)
 
 ;; Enable MELPA
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
@@ -8,6 +9,23 @@
   (when (< emacs-major-version 24)
     (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
+
+(advice-add 'package-install
+            :before
+            (lexical-let ((done nil))
+              (lambda (&args)
+                (when (not done)
+                  (message "Refreshing contents from package-install")
+                  (package-refresh-contents)
+                  (setq done t)))))
+
+;; Refresh ELPA/MELPA packages
+;;(package-refresh-contents)
+
+;; Install Use-Package for easier package installation and configuration
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 ;; User indentifaction
 (setq user-full-name "Robin Mattheussen")
@@ -49,10 +67,6 @@
 (electric-pair-mode t)
 (setq electric-pair-pairs '((?\" . ?\")
                             (?\{ . ?\})))
-
-;; Configure Use-Package
-(eval-when-compile
-  (require 'use-package))
 
 ;; Install and configure Beacon-Mode
 ;; Provides easy to follow cursor highlighting
