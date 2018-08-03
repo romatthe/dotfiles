@@ -8,17 +8,21 @@ bindkey -e
 
 zstyle :compinstall filename '/home/romatthe/.zshrc'
 
+# Powerline support
+if [[ $SYSTEM == 'Linux' ]]; then
+    . /usr/share/powerline/zsh/powerline.zsh
+fi
+
 # Enable compinit and allow bash-completions
 autoload -Uz compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
 
-# Powerline support
-. /usr/share/powerline/zsh/powerline.zsh
-
 if [[ ! -d $ZPLUG_HOME ]]; then
-  curl -sL zplug.sh/installer | zsh
+  curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 fi
 source $ZPLUG_HOME/init.zsh
+
+alias ll='ls -l'
 
 exists() {
   command -v $1 > /dev/null 2>&1
