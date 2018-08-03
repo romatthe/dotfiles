@@ -5,7 +5,7 @@
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t) 
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
   (when (< emacs-major-version 24)
     (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
@@ -48,7 +48,7 @@
 (delete-selection-mode t)                           ;; Allows overwriting of the selection
 (transient-mark-mode t)                             ;; Allows for sane defaults regarding selected region
 (show-paren-mode t)                                 ;; Always highlight parens
-(setq x-select-enable-clipboard t)                  ;; Interaction with X clipboard
+(setq select-enable-clipboard t)                    ;; Interaction with X clipboard
 (setq tab-width 4                                   ;; Sane tabs
       indent-tabs-mode nil)
 
@@ -169,6 +169,11 @@
   :config
   (global-company-mode t))
 
+;; Install and configure flycheck
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
 ;; Install and configure Ivy and Swiper
 ;; Provides a selection narrowing framework (Ivy) and enhanced search functionality (Swiper)
 ;; The Swiper package includes Ivy
@@ -257,7 +262,7 @@
 ;; Provides a hook to use ansi-color on the *compilation* buffer
 (use-package ansi-color
   :ensure t
-  :hook (compilation-filter . nm/colorize-compilation) 
+  :hook (compilation-filter . nm/colorize-compilation)
   :init
   (progn
     (defun nm/colorize-compilation ()
@@ -271,6 +276,19 @@
   :ensure t
   :mode ".rs$")
 
+;; Install and configure Cargo-Minor-Mode
+;; Provices Cargo commands in Rust-Mode under C-c C-c
+(use-package cargo
+  :ensure t
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package flycheck-rust
+  :ensure t
+  ;;:hook (rust-mode . 'flycheck-rust-setup))
+  :config
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+  
 ;; Install and configure Racer-Mode for use with Rust-Mode
 (use-package racer
   :ensure t
@@ -326,7 +344,7 @@ for the problem of OSX builds not passing environmental variables through to Ema
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
+    (flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
