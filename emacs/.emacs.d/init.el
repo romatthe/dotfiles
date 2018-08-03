@@ -19,9 +19,6 @@
                   (package-refresh-contents)
                   (setq done t)))))
 
-;; Refresh ELPA/MELPA packages
-;;(package-refresh-contents)
-
 ;; Install Use-Package for easier package installation and configuration
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -67,6 +64,16 @@
 (electric-pair-mode t)
 (setq electric-pair-pairs '((?\" . ?\")
                             (?\{ . ?\})))
+
+;; Install and configure Exec-Path-From-Shell
+;; Handy package for fixing buggy OSX stuff
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (when (eq system-type 'darwin)
+    (exec-path-from-shell-initialize)
+    (exec-path-from-shell-copy-env "RUST_SRC_PATH")
+    (exec-path-from-shell-copy-env "CARGO_HOME")))
 
 ;; Install and configure Beacon-Mode
 ;; Provides easy to follow cursor highlighting
@@ -259,6 +266,22 @@
 	(ansi-color-apply-on-region
 	 compilation-filter-start (point))))))
 
+;; Install and configure Rust-Mode
+(use-package rust-mode
+  :ensure t
+  :mode ".rs$")
+
+;; Install and configure Racer-Mode for use with Rust-Mode
+(use-package racer
+  :ensure t
+  :bind ("TAB" . company-indent-or-complete-common)
+  :hook ((rust-mode . racer-mode)
+	 (racer-mode . eldoc-mode))
+  :config
+  (setq company-tooltip-align-annotations t
+	racer-rust-src-path (getenv "RUST_SRC_PATH")
+	racer-cargo-home (getenv "CARGO_HOME")))
+
 (defun rm/duplicate-line (arg)
   "Duplicate current line, leaving point in lower line."
   (interactive "*p")
@@ -286,6 +309,15 @@
   ;; Put the point in the lowest line and return
   (next-line arg))
 
+(defun rm/source-file-and-get-envs (filename)
+  "Browses a specific file and tries to fetch all exported environmental variables. This is primarily a fix
+for the problem of OSX builds not passing environmental variables through to Emacs."
+  (let* ((cmd (concat ". " filename "; env"))
+         (env-str (shell-command-to-string cmd))
+         (env-lines (split-string env-str "\n"))
+         (envs (mapcar (lambda (s) (replace-regexp-in-string "=.*$" "" s)) env-lines)))
+    (delete "" envs)))
+
 ;; DONT TOUCH
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -294,7 +326,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
+    (exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

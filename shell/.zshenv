@@ -13,17 +13,14 @@ else
     export SYSTEM=""
 fi
 
+# Set up Rust environment
 if [[ -d $HOME/.cargo ]]; then
     # Add Cargo's directory to the PATH
-    export PATH="$HOME/.cargo/bin:$PATH"
     source $HOME/.cargo/env
-
-    # Set the right RUST_SRC directory or Linux or Mac
-    if [[ $SYSTEM == 'Linux' ]]; then
-	export RUST_SRC_PATH=${HOME}/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src
-    elif [[ $SYSTEM == 'Darwin' ]]; then
-	export RUST_SRC_PATH=${HOME}/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src
-    fi
+    export PATH="$HOME/.cargo/bin:$PATH"
+    export CARGO_HOME="$HOME/.cargo/"
+    export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
+    export DYLD_LIBRARY_PATH="$(rustc --print sysroot)/lib"
 fi
 
 # Add dotnet tools directory to the PATH
