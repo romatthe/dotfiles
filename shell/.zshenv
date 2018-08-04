@@ -27,5 +27,5 @@ fi
 export PATH="$HOME/.dotnet/tools:$PATH"
 
 # Setup SDKMAN
-export SDKMAN_DIR="/Users/romatthe/.sdkman"
-[[ -s "/Users/romatthe/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/romatthe/.sdkman/bin/sdkman-init.sh"
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
