@@ -73,7 +73,8 @@
   (when (eq system-type 'darwin)
     (exec-path-from-shell-initialize)
     (exec-path-from-shell-copy-env "RUST_SRC_PATH")
-    (exec-path-from-shell-copy-env "CARGO_HOME")))
+    (exec-path-from-shell-copy-env "CARGO_HOME")
+    (exec-path-from-shell-copy-env "PATH")))
 
 ;; Install and configure Beacon-Mode
 ;; Provides easy to follow cursor highlighting
