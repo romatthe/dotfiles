@@ -35,9 +35,14 @@
 (add-to-list 'default-frame-alist '(ns-appearance . dark))        ;; Change the titlebar to a dark version
 (add-to-list 'default-frame-alist '(fullscreen . maximized))      ;; Start with a maximized frame
 ;; (set-face-attribute 'default nil :height 130)
-(add-to-list 'default-frame-alist
-             '(font . "Droid Sans Mono for Powerline-13"))
+;;(add-to-list 'default-frame-alist
+;;             '(font . "Droid Sans Mono for Powerline-12"))
 (setq ns-use-proxy-icon nil)                                      ;; Disable title bar icon
+
+;; Only set the font size to 13 on high-resolution Mac systems
+(if (eq system-type 'darwin)
+  (add-to-list 'default-frame-alist '(font . "Droid Sans Mono for Powerline-13"))
+  (add-to-list 'default-frame-alist '(font . "Droid Sans Mono for Powerline-10")))
 
 ;; Sane defaults
 (global-set-key (kbd "<home>") 'beginning-of-line)
