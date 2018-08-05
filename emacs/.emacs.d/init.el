@@ -62,7 +62,8 @@
 (when (not indicate-empty-lines)
   (toggle-indicate-empty-lines))
 
-;; Put backups in one place: flat, no tree structure
+;; Stop making autosave files, put backups in one place: flat, no tree structure
+(setq auto-save-default nil)
 (setq backup-directory-alist '(("" . "~/.emacs.d/emacs-backup")))
 
 ;; Set auto-paring of braces, quotes, etc.
@@ -180,6 +181,20 @@
   :ensure t
   :init (global-flycheck-mode))
 
+;; Install and configure flycheck-pos-tip
+;; Provides a graphical popup for flycheck errors
+(use-package flycheck-pos-tip
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'flycheck
+    (flycheck-pos-tip-mode)))
+
+;; Install and configure Flycheck-Haskell
+(use-package flycheck-haskell
+  :ensure t
+  :hook (haskell-mode . flycheck-haskell-setup))
+
 ;; Install and configure Ivy and Swiper
 ;; Provides a selection narrowing framework (Ivy) and enhanced search functionality (Swiper)
 ;; The Swiper package includes Ivy
@@ -296,6 +311,7 @@
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
   
 ;; Install and configure Racer-Mode for use with Rust-Mode
+;; Provides completion through Rust's Racer tool
 (use-package racer
   :ensure t
   :bind ("TAB" . company-indent-or-complete-common)
@@ -307,6 +323,7 @@
 	racer-cargo-home (getenv "CARGO_HOME")))
 
 ;; Install and configure Elixir-Mode
+;; Provides a basic mode for editing Elixir
 (use-package elixir-mode
   :ensure t
   :mode (".ex$" ".exs$"))
@@ -319,6 +336,26 @@
 	 (alchemist-mode . alchemist-company-mode))
   :config
   (setq alchemist-test-status-modeline t))
+
+;; Install and configure Haskell-Mode
+;; Provides basic support for writing Haskell in Emacs
+(use-package haskell-mode
+  :ensure t
+  :mode (".hs$" "lhs?"))
+
+;; Install and configure Company-Cabal
+;; Provides Company suport for cabal files
+(use-package company-cabal
+  :ensure t
+  :after company
+  :config
+  (add-to-list 'company-backends 'company-cabal))
+
+;; Install and configure Intero
+;; Provides a complete programming environment for Haskell on top of Haskell-Mode
+(use-package intero
+  :ensure t
+  :hook (haskell-mode . intero-mode))
 
 (defun rm/duplicate-line (arg)
   "Duplicate current line, leaving point in lower line."
@@ -364,7 +401,7 @@ for the problem of OSX builds not passing environmental variables through to Ema
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
+    (flycheck-haskell flycheck-pos-tip company-cabal intero haskell-mode alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
