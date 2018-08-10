@@ -62,9 +62,11 @@
 (when (not indicate-empty-lines)
   (toggle-indicate-empty-lines))
 
-;; Stop making autosave files, put backups in one place: flat, no tree structure
+;; Stop making autosave and lock files, put backups in one place: flat, no tree structure
 (setq auto-save-default nil)
 (setq backup-directory-alist '(("" . "~/.emacs.d/emacs-backup")))
+(setq create-lockfiles nil)
+
 
 ;; Set auto-paring of braces, quotes, etc.
 (electric-pair-mode t)
