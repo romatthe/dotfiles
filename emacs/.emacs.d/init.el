@@ -1,3 +1,4 @@
+
 (require 'package)
 (require 'cl)
 
@@ -130,7 +131,8 @@
   (global-set-key (kbd "M-S-<up>") 'move-text-up)
   (global-set-key (kbd "M-S-<down>") 'move-text-down))
 
-;;
+;; Install and configure Sysmon
+;; Provides a small system monitor in the minibuffer
 (use-package symon
   :ensure t
   :config
@@ -426,7 +428,7 @@ for the problem of OSX builds not passing environmental variables through to Ema
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (symon flycheck-color-mode-line flycheck-haskell flycheck-pos-tip company-cabal intero haskell-mode alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
+    (nov symon flycheck-color-mode-line flycheck-haskell flycheck-pos-tip company-cabal intero haskell-mode alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
