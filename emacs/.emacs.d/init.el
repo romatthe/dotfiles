@@ -130,6 +130,13 @@
   (global-set-key (kbd "M-S-<up>") 'move-text-up)
   (global-set-key (kbd "M-S-<down>") 'move-text-down))
 
+;;
+(use-package symon
+  :ensure t
+  :config
+  (add-to-list 'symon-monitors 'symon-darwin-battery-monitor)
+  (symon-mode))
+  
 ;; Install and configure Doom-Themes
 ;; Provides hlissner's awesome themes from Doom-Emacs
 (use-package doom-themes
@@ -236,6 +243,16 @@
   ;; :after (counsel projectile) //TODO Why won't this work when using after?
   :config
   (counsel-projectile-mode t))
+
+;; Install and configure Markdown-Mode
+;; Provides an editing environment for writing markdown documents
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "pandoc"))
 
 ;; Install and configure Web-Mode
 ;; Provides a very helpful mode for editing (mixed) HTML, CSS, etc. files
@@ -409,7 +426,7 @@ for the problem of OSX builds not passing environmental variables through to Ema
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (flycheck-color-mode-line flycheck-haskell flycheck-pos-tip company-cabal intero haskell-mode alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
+    (symon flycheck-color-mode-line flycheck-haskell flycheck-pos-tip company-cabal intero haskell-mode alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
