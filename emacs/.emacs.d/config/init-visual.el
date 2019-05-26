@@ -24,6 +24,9 @@
 ;; Disable the blinking cursor
  (blink-cursor-mode 0)
 
+;; Show line numbers
+(global-display-line-numbers-mode t)
+
 ;; Fonts
 (if (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(font . "Droid Sans Mono for Powerline-13"))
