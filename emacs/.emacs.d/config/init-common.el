@@ -1,6 +1,11 @@
-(load-theme 'wombat)
+;; Easy confirmation
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq confirm-kill-process nil)
 
-(print "Hi!")
-(blink-cursor-mode 0)
+;; Security settings
+(setq gnutls-verify-error t
+      tls-checktrust t)
 
-(provide 'init-common)
+;; Save and restore session when restarting
+(desktop-save-mode t)
+(save-place-mode t)
