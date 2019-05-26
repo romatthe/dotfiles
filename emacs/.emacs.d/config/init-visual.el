@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 ;; Mark all themes as safe to load, then set a theme
 (setq custom-safe-themes t)
 (load-theme 'leuven)
@@ -32,8 +34,6 @@
 
 ;; Highlight current line
 (global-hl-line-mode t)
-
-
 
 ;; This package requires you to run M-x all-the-icons-install-fonts
 ;; after having installed the package!
