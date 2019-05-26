@@ -41,4 +41,6 @@
                         (buffer-file-name))))
       dotfile-dir-config (concat dotfile-dir "config/"))
 
+;; Load all files in ~/.emacs.d/config directory
+;; No nested directories supported
 (mapc 'load (directory-files (concat (expand-file-name user-emacs-directory) "config") t "^[^#].*el$"))
