@@ -16,7 +16,6 @@
       use-dialog-box nil)
 
 ;; Disable the blinking cursor
-(blink-cursor-mode 0)
 
 ;; Fonts
 (if (eq system-type 'darwin)
@@ -29,6 +28,9 @@
 
 ;; Highlight matching parenthesis 
 (show-paren-mode t)
+
+;; Highlight current line
+(global-hl-line-mode t)
 
 ;; Security settings
 (setq gnutls-verify-error t
@@ -54,3 +56,24 @@
 
 ;; Use use-package together with straight.el
 (straight-use-package 'use-package)
+
+(setq dotfile-dir (file-name-directory
+                   (file-chase-links
+                    (or load-file-name
+                        (buffer-file-name))))
+      dotfile-dir-config (concat dotfile-dir "config/"))
+
+;; (use-package init-common :load-path "config/")
+
+(mapc 'load (directory-files (concat (expand-file-name user-emacs-directory) "config") t "^[^#].*el$"))
+
+;; Add modular configuration files to the load path
+;;(load (concat dotfile-dir-config "init-common.el"))
+;;(load (concat dotfile-dir-config "init-visual.el"))
+
+;;(directory-files dotfile-dir-config t directory-files-no-dot-files-regexp)
+
+;;(dolist
+;;    (file (directory-files dotfile-dir-config t directory-files-no-dot-files-regexp))
+;;  (if (string= (file-name-extension file) "el")
+;;      (print (file-name-extension file))))
