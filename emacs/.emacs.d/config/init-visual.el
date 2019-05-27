@@ -48,3 +48,22 @@
   :straight t
   :after all-the-icons
   :hook (dired-mode . all-the-icons-dired-mode))
+
+;; doom-themes, collection of themes from Doom Emacs config
+(use-package doom-themes
+  :straight t
+  :init
+  (load-theme 'doom-solarized-light t)
+  :config
+  (progn
+    (setq doom-themes-enable-bold t
+	  doom-themes-enable-italic t)
+    (doom-themes-treemacs-config)
+    (doom-themes-org-config)))
+
+;; doom-modeline, an advanced modeline
+(use-package doom-modeline
+  :straight t
+  :hook (after-init . doom-modeline-init)
+  :config
+  (setq doom-modeline-buffer-file-name-style 'relative-from-project))
