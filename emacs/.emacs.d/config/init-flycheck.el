@@ -27,7 +27,7 @@
   ;; Draw the indicators on the right side, also in line with Jetbrains IDEs
   :custom (flycheck-indication-mode 'right-fringe)
   ;; Using global mode is the recommended way to use flycheck
-  hook ((after-init . global-flycheck-mode))
+  :hook ((after-init . global-flycheck-mode))
   :config
   (flycheck-define-error-level 'error
 			       :severity 2
