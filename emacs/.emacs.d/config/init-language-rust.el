@@ -5,7 +5,6 @@
   :straight t
   :after lsp-mode
   :mode ".rs$"
-  :hook (rust-mode . lsp)
   :config
   (setq rust-format-on-save t))
 
