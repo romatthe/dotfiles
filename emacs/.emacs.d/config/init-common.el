@@ -9,8 +9,8 @@
       tls-checktrust t)
 
 ;; Save and restore session when restarting
-(desktop-save-mode t)
-(save-place-mode t)
+;;(desktop-save-mode t)
+;;(save-place-mode t)
 
 ;; Immediately display keystrokes in the minibuffer
 (setq echo-keystrokes 0.1)
@@ -45,3 +45,12 @@
       recentf-max-saved-items 50)
 (savehist-mode 1)
 (recentf-mode 1)
+
+;; Force shell to go into interactive mode, sourcing the necessary files
+(setq shell-command-switch "-ic")
+
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
