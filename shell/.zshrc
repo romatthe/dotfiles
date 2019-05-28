@@ -150,7 +150,3 @@ if ! zplug check --verbose; then
 fi
 
 zplug load
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/romatthe/.sdkman"
-[[ -s "/home/romatthe/.sdkman/bin/sdkman-init.sh" ]] && source "/home/romatthe/.sdkman/bin/sdkman-init.sh"

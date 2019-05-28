@@ -41,8 +41,8 @@ t
 
 ;; Only set the font size to 13 on high-resolution Mac systems
 (if (eq system-type 'darwin)
-  (add-to-list 'default-frame-alist '(font . "Droid Sans Mono for Powerline-13"))
-  (add-to-list 'default-frame-alist '(font . "Droid Sans Mono for Powerline-10")))
+  (add-to-list 'default-frame-alist '(font . "Noto Mono for Powerline-13"))
+  (add-to-list 'default-frame-alist '(font . "Noto Mono for Powerline-10")))
 
 ;; Sane defaults
 (global-set-key (kbd "<home>") 'beginning-of-line)
@@ -187,7 +187,7 @@ t
 
     ;; The default width and height of the icons is 22 pixels. If you are
     ;; using a Hi-DPI display, uncomment this to double the icon size.
-    (treemacs-resize-icons 44)
+    (treemacs-resize-icons 22)
 
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
@@ -206,7 +206,12 @@ t
         ("C-x t B"   . treemacs-bookmark)
         ("C-x t C-t" . treemacs-find-file)
         ("C-x t M-t" . treemacs-find-tag)))
-  
+
+;; Projectile integration for Treemacd
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
+
 ;; Install and configure Doom-Themes
 ;; Provides hlissner's awesome themes from Doom-Emacs
 (use-package doom-themes
@@ -215,10 +220,16 @@ t
   (setq doom-themes-enable-bold t
 	doom-themes-enable-italic t)
   ;;(load-theme 'doom-one t)
-  (load-theme 'doom-vibrant t)
+  (load-theme 'doom-dracula t)
   (doom-themes-visual-bell-config)
-  ;;(doom-themes-treemacs-config)
+  (doom-themes-treemacs-config)
   (doom-themes-org-config))
+  
+(use-package kaolin-themes
+  :ensure t
+  :config)
+  ;;(load-theme 'kaolin-valley-dark t)
+  ;;(kaolin-treemacs-theme))
 
 ;; Install and configure Projectile
 ;; Provides project magement functions
@@ -418,6 +429,11 @@ t
 	racer-rust-src-path (getenv "RUST_SRC_PATH")
 	racer-cargo-home (getenv "CARGO_HOME")))
 
+;; Install and configure Scala-Mode
+(use-package scala-mode
+  :interpreter
+  ("scala" . scala-mode))
+
 ;; Install and configure Elixir-Mode
 ;; Provides a basic mode for editing Elixir
 (use-package elixir-mode
@@ -481,8 +497,7 @@ t
   (next-line arg))
 
 (defun rm/source-file-and-get-envs (filename)
-  "Browses a specific file and tries to fetch all exported environmental variables. This is primarily a fix
-for the problem of OSX builds not passing environmental variables through to Emacs."
+  "Browses a specific file and tries to fetch all exported environmental variables"
   (let* ((cmd (concat ". " filename "; env"))
          (env-str (shell-command-to-string cmd))
          (env-lines (split-string env-str "\n"))
@@ -497,7 +512,7 @@ for the problem of OSX builds not passing environmental variables through to Ema
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (paradox treemacs-icons-dired treemacs-projectile treemacs nov symon flycheck-color-mode-line flycheck-haskell flycheck-pos-tip company-cabal intero haskell-mode alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes)))
+    (scala-mode kaolin-themes paradox treemacs-icons-dired treemacs-projectile treemacs nov symon flycheck-color-mode-line flycheck-haskell flycheck-pos-tip company-cabal intero haskell-mode alchemist elixir-mode flycheck-rust flycheck cargo exec-path-from-shell racer rust-mode beacon yaml-mode magit counsel-projectile projectile web-mode counsel swiper powerline company org-bullets nlinum-hl restart-emacs move-text which-key use-package doom-themes)))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
