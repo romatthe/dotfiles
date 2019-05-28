@@ -26,7 +26,7 @@
 (use-package swiper
   :straight t
   :after ivy
-  :bind (("\C-s" . swiper))))
+  :bind (("\C-s" . swiper)))
 
 ;; counsel, additional functionality that uses ivy
 (use-package counsel
