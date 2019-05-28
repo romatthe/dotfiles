@@ -21,3 +21,9 @@
   (use-package pos-tip
     :straight
     :commands (pos-tip-show)))
+
+(use-package company-box
+  :straight t
+  :hook (company-mode . company-box-mode)
+  :config
+  (setq company-box-icons-alist 'company-box-icons-all-the-icons))
