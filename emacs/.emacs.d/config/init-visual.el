@@ -2,7 +2,6 @@
 
 ;; Mark all themes as safe to load, then set a theme
 (setq custom-safe-themes t)
-(load-theme 'leuven)
 
 ;; Disable the beeping noise on errors
 (setq ring-bell-function 'ignore)
@@ -53,7 +52,7 @@
 (use-package doom-themes
   :straight t
   :init
-  (load-theme 'doom-solarized-light t)
+  (load-theme 'doom-one t)
   :config
   (progn
     (setq doom-themes-enable-bold t
