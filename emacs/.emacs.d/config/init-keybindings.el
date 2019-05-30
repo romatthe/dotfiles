@@ -6,9 +6,9 @@
 
 ;; Global key definitions
 (general-define-key
- "C-d" 'romatthe/duplicate-line
  "<home>" 'beginning-of-line
  "<end>" 'end-of-line
+ "C-d" 'romatthe/duplicate-line
  ;; Dired keys
  :keymaps 'dired-mode-map
  "c" 'find-file)
