@@ -54,3 +54,8 @@
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
+
+;; restarts-emacs, a way to quickly restart emacs
+(use-package restart-emacs
+  :straight t
+  :bind ("C-x C-r" . restart-emacs))
