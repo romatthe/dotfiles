@@ -43,10 +43,10 @@
   :straight t)
 
 ;; Enable display of icons in dired
-(use-package all-the-icons-dired
-  :straight t
-  :after all-the-icons
-  :hook (dired-mode . all-the-icons-dired-mode))
+;;(use-package all-the-icons-dired
+;;  :straight t
+;;  :after all-the-icons
+;;  :hook (dired-mode . all-the-icons-dired-mode))
 
 ;; doom-themes, collection of themes from Doom Emacs config
 (use-package doom-themes
@@ -57,7 +57,7 @@
   (progn
     (setq doom-themes-enable-bold t
 	  doom-themes-enable-italic t)
-    (doom-themes-treemacs-config)
+    ;;(doom-themes-treemacs-config)
     (doom-themes-org-config)))
 
 ;; doom-modeline, an advanced modeline
