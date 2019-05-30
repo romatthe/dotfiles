@@ -46,9 +46,7 @@
 (savehist-mode 1)
 (recentf-mode 1)
 
-;; Force shell to go into interactive mode, sourcing the necessary files
-(setq shell-command-switch "-ic")
-
+;; exec-path-from-shell, allows correct handling of $PATH from Emacs
 (use-package exec-path-from-shell
   :straight t
   :config
