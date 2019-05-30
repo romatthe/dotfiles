@@ -44,3 +44,9 @@
 			       :overlay-category 'flycheck-info-overlay
 			       :fringe-bitmap 'flycheck-fringe-indicator
 			       :fringe-face 'flycheck-fringe-info))
+
+;; flycheck-pos-tip, displays errors in a pos-tip tooltip
+(use-package flycheck-pos-tip
+  :straight t
+  :after flycheck
+  :hook (flycheck-mode . flycheck-pos-tip-mode))
