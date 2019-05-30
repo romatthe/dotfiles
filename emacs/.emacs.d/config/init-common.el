@@ -59,3 +59,13 @@
 (use-package restart-emacs
   :straight t
   :bind ("C-x C-r" . restart-emacs))
+
+;; dashboard, a configurable dashboard when starting Emacs
+(use-package dashboard
+  :straight t
+  :config
+  (setq dashboard-startup-banner "~/.emacs.d/img/ness_transp.png"
+	dashboard-items '((recents  . 5)
+                          (projects . 5)
+			  (agenda . 5)))
+  (dashboard-setup-startup-hook))
