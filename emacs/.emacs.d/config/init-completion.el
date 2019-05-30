@@ -25,6 +25,7 @@
 
 ;; company-box, provides icons in the company drop-down
 (use-package company-box
+  :disabled
   :straight t
   :after company
   :hook (company-mode . company-box-mode)
