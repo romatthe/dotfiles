@@ -60,7 +60,9 @@
 
 ;; dashboard, a configurable dashboard when starting Emacs
 (use-package dashboard
-  :straight t
+  :straight (dashboard :type git :host github :repo "emacs-dashboard/emacs-dashboard"
+                       :fork (:host github
+				    :repo "romatthe/emacs-dashboard"))
   :config
   (setq dashboard-startup-banner "~/.emacs.d/img/ness_transp.png"
 	dashboard-items '((recents  . 5)
