@@ -4,3 +4,4 @@ emacs-backup/
 projectile-bookmarks.eld
 recentf
 auto-save-list/
+*.el~
