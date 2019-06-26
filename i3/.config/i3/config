@@ -1,0 +1,114 @@
+# General
+set $mod Mod4
+font pango:Misc Termsyn, Wuncon Siji
+new_window pixel 4
+focus_follows_mouse  yes
+floating_modifier $mod
+workspace_auto_back_and_forth yes
+
+# Gaps
+gaps inner 20
+gaps outer 20
+smart_gaps on
+smart_borders on
+
+# Keybindings
+
+## Quicklaunch bindings
+bindsym $mod+Return exec --no-startup-id "gnome-terminal"
+bindsym $mod+r exec --no-startup-id"rofi -show drun -theme romatthe"
+bindsym $mod+b exec --no-startup-id "google-chrome-stable"
+
+## Window movement
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+h move left 30px
+bindsym $mod+Shift+j move down 30px
+bindsym $mod+Shift+k move up 30px
+bindsym $mod+Shift+l move right 30px
+bindsym $mod+Shift+Right move workspace to output right
+bindsym $mod+Shift+Down move container to output right
+
+## Window Resize
+bindsym $mod+Mod1+h resize shrink width 30 px or 10 ppt
+bindsym $mod+Mod1+j resize shrink height 30 px or 10 ppt
+bindsym $mod+Mod1+k resize grow height 30 px or 10 ppt
+bindsym $mod+Mod1+l resize grow width 30 px or 10 ppt
+
+## Tiling
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+g split toggle
+bindsym $mod+f fullscreen
+bindsym $mod+s layout stacking
+bindsym $mod+t layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+q kill
+bindsym $mod+minus move scratchpad
+bindsym $mod+equal scratchpad show
+bindsym $mod+slash bar mode invisible
+bindsym $mod+shift+slash bar mode dock
+
+## Misc
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -t warning -m 'Exiting i3' -b 'Yeah' 'i3-msg exit'"
+
+## Audio
+bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer -Mq set Master,0 5%+ unmute"
+bindsym XF86AudioLowerVolume exec --no-startup-id "amixer -Mq set Master,0 5%- unmute"
+bindsym XF86AudioMute exec --no-startup-id "pamixer -t"
+
+## Brightness
+bindsym XF86MonBrightnessUp exec --no-startup-id "light -A 10"
+bindsym XF86MonBrightnessDown exec --no-startup-id "light -U 10"
+
+# Workspace
+## Terminal
+set $ws1 "1: TTY"
+set $ws2 "2: WEB"
+set $ws3 "3: LAB"
+set $ws4 "4: MED"
+set $ws5 "5: SYS"
+set $ws6 "6: COM"
+set $ws7 "7: DOC"
+
+## Workspace keybinding
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+
+## Move to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+
+# Color
+set $cbg "#f26262"
+set $ccolor "#efebe0"
+set $cunfo "#cb8b8b"
+set $cindi "#145ba7"
+set $cindiu "#8a9db1"
+
+#<colorclass>           <border> <background> <text> <indicator> <child_border>
+client.focused          $cbg    $cbg    $ccolor $cindi   $cbg
+client.focused_inactive $cbg    $cunfo  $ccolor $cindiu   $cunfo
+client.unfocused        $cbg    $cunfo  $ccolor $cindiu   $cunfo
+client.urgent           $cbg    $cunfo  $ccolor $cindi   $cunfo
+
+# Startup
+#exec_always --no-startup-id "sh ~/.fehbg &"
+exec_always --no-startup-id "polybar romatthe"
