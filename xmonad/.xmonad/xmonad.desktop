@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Xmonad
+Comment=Lightweight X11 tiled window manager written in Haskell
+Exec=xmonad
+Type=Application
+X-LightDM-DesktopName=Xmonad
+DesktopNames=Xmonad
+Keywords=tiling;wm;windowmanager;window;manager;

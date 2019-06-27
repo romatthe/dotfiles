@@ -1,44 +1,67 @@
 import XMonad
 
+
+import Data.List
 import XMonad.Actions.CycleWS
 import XMonad.Actions.Navigation2D
-
+import XMonad.Config
 import XMonad.Hooks.EwmhDesktops
-
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.BinarySpacePartition
+import XMonad.Layout.FixedColumn
 import qualified XMonad.Layout.Fullscreen as FS
+import XMonad.Layout.MultiToggle
+import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
 import XMonad.Layout.ThreeColumns
-
 import XMonad.Util.CustomKeys
+import XMonad.Util.Run
 
 
 main :: IO ()
-main =
+main = do
+  xmobarPipe <- spawnPipe xmobarCommand
   xmonad
-    $ withNavigation2DConfig def { defaultTiledNavigation = hybridNavigation }
-    $ myConfig
+    $ withNavigation2DConfig def { layoutNavigation = [("BSP", hybridNavigation)] }
+    $ myConfig { logHook = dynamicLogWithPP $ myXmobarPP xmobarPipe }
 
 
 -- TODO: Get these colors from xrdb
-backgroundColor   = "#FFFFFF"
+backgroundColor   = "#FEFEFE"
 middleColor       = "#AEAEAE"
-foregroundColor   = "#000000"
+foregroundColor   = "#0E0E0E"
 
 myConfig = ewmh def
-  { borderWidth        = 1
-  , focusedBorderColor = foregroundColor
+  { borderWidth        = 5
+  , focusedBorderColor = "#FFFFFF"
   , focusFollowsMouse  = False
-  , handleEventHook    = fullscreenEventHook
+  , handleEventHook    = docksEventHook <+> fullscreenEventHook
   , keys               = myKeys
-  , layoutHook         =   smartBorders $ smartSpacingWithEdge 1 emptyBSP
-                       ||| smartSpacingWithEdge 1 (ThreeColMid 1 (3/100) (2/3))
+  , layoutHook         = avoidStruts $ smartBorders $ mkToggle (NOBORDERS ?? FULL ?? EOT) $ spacingWithEdge 4 emptyBSP
+  , manageHook         = manageDocks <+> (isFullscreen --> doFullFloat) <+> manageHook defaultConfig
   , modMask            = mod4Mask
   , normalBorderColor  = middleColor
   , terminal           = "gnome-terminal"
   , workspaces         = [ "browse", "code", "read", "chat", "etc" ]
   }
+
+myXmobarPP xmobarPipe = defaultPP
+  { ppCurrent         = pad . xmobarColor foregroundColor  ""
+  , ppHidden          = pad . xmobarColor middleColor ""
+  , ppHiddenNoWindows = pad . xmobarColor middleColor ""
+  , ppLayout          = const ""
+  , ppOutput          = hPutStrLn xmobarPipe
+  , ppTitle           = const ""
+  , ppVisible         = pad . xmobarColor middleColor ""
+  , ppWsSep           = " "
+  }
+
+xmobarCommand :: String
+xmobarCommand = "xmobar ~/.xmonad/xmobarrc"
 
 myKeys = customKeys removedKeys addedKeys
 
@@ -72,11 +95,18 @@ addedKeys conf @ XConfig {modMask = modm} =
     -- Layout switching
   , ((modm .|. shiftMask, xK_t), sendMessage NextLayout)
 
+  -- Fullscreen toggle
+  , ((modm, xK_f), sendMessage $ Toggle FULL)
+
     -- Directional navigation of windows
   , ((modm, xK_l), windowGo R False)
   , ((modm, xK_h), windowGo L False)
   , ((modm, xK_k), windowGo U False)
   , ((modm, xK_j), windowGo D False)
+  , ((modm, xK_Right), windowGo R False)
+  , ((modm, xK_Left),  windowGo L False)
+  , ((modm, xK_Up),    windowGo U False)
+  , ((modm, xK_Down),  windowGo D False)
 
     -- Expand and shrink windows
   , ((modm .|. controlMask,                xK_l), sendMessage $ ExpandTowards R)
