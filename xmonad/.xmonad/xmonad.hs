@@ -1,68 +1,109 @@
-import XMonad
-
-
 import Data.List
+import System.IO
+
+import XMonad
 import XMonad.Actions.CycleWS
 import XMonad.Actions.Navigation2D
-import XMonad.Config
-import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.SetWMName
 import XMonad.Layout.BinarySpacePartition
-import XMonad.Layout.FixedColumn
-import qualified XMonad.Layout.Fullscreen as FS
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
-import XMonad.Layout.NoBorders
 import XMonad.Layout.Spacing
-import XMonad.Layout.ThreeColumns
+import XMonad.Layout.ResizableTile
+import XMonad.Layout.WindowArranger
+import XMonad.Layout.NoBorders
+import XMonad.Layout.Fullscreen
+import XMonad.Layout.Circle
+import XMonad.Layout.Gaps
+import qualified XMonad.StackSet as W
 import XMonad.Util.CustomKeys
-import XMonad.Util.Run
+import XMonad.Util.Run(spawnPipe)
+import XMonad.Util.EZConfig(additionalKeys)
+import XMonad.Util.SpawnOnce
 
 
-main :: IO ()
 main = do
-  xmobarPipe <- spawnPipe xmobarCommand
-  xmonad
-    $ withNavigation2DConfig def { layoutNavigation = [("BSP", hybridNavigation)] }
-    $ myConfig { logHook = dynamicLogWithPP $ myXmobarPP xmobarPipe }
+	bar <- spawnPipe panel
+	-- info <- spawnPipe myRightBar
+	xmonad $ defaultConfig
+		{ manageHook = manageDocks <+> myManageHook
+		, layoutHook = windowArrange layout
+		-- , startupHook = startUp
+		, workspaces = myWorkspaces
+		, modMask = mod4Mask
+		, terminal = "gnome-terminal"
+		, borderWidth = 7
+		, focusedBorderColor = "#6A555C" --"#404752"
+		, normalBorderColor = "#404752" --"#343C48"
+		, logHook = logbar bar
+    , keys = myKeys
+		}
 
+-- Workspaces plus clickable functionality
+myWorkspaces 	:: [String]
+myWorkspaces	= click $ [ " PHOS ", " ETHE ", " ASTR ", " THEE ", " CRES "]
+		  where click l = [ "^ca(1, xdotool key super+"
+				  ++ show (n) ++ ")" ++ ws ++ "^ca()" |
+				  (i,ws) <- zip [1..] l,
+				  let n = i]
 
--- TODO: Get these colors from xrdb
-backgroundColor   = "#FEFEFE"
-middleColor       = "#AEAEAE"
-foregroundColor   = "#0E0E0E"
+myManageHook = composeAll
+	[ className =? "feh" --> doFloat
+	, className =? "mpv"	--> doFloat
+	, manageDocks
+	]
 
-myConfig = ewmh def
-  { borderWidth        = 5
-  , focusedBorderColor = "#FFFFFF"
-  , focusFollowsMouse  = False
-  , handleEventHook    = docksEventHook <+> fullscreenEventHook
-  , keys               = myKeys
-  , layoutHook         = avoidStruts $ smartBorders $ mkToggle (NOBORDERS ?? FULL ?? EOT) $ spacingWithEdge 4 emptyBSP
-  , manageHook         = manageDocks <+> (isFullscreen --> doFullFloat) <+> manageHook defaultConfig
-  , modMask            = mod4Mask
-  , normalBorderColor  = middleColor
-  , terminal           = "gnome-terminal"
-  , workspaces         = [ "browse", "code", "read", "chat", "etc" ]
-  }
+-- startUp :: X()
+-- startUp = do
+--	spawnOnce "compton"
+--	spawnOnce "./.fehbg"
+--	spawnOnce "xsetroot -cursor_name left_ptr"
+--	spawnOnce "xrdb -load .Xresources"
+--	spawnOnce "mpd"
+--	setWMName "LG3D"
 
-myXmobarPP xmobarPipe = defaultPP
-  { ppCurrent         = pad . xmobarColor foregroundColor  ""
-  , ppHidden          = pad . xmobarColor middleColor ""
-  , ppHiddenNoWindows = pad . xmobarColor middleColor ""
-  , ppLayout          = const ""
-  , ppOutput          = hPutStrLn xmobarPipe
-  , ppTitle           = const ""
-  , ppVisible         = pad . xmobarColor middleColor ""
-  , ppWsSep           = " "
-  }
+logbar h = dynamicLogWithPP $ tryPP h
 
-xmobarCommand :: String
-xmobarCommand = "xmobar ~/.xmonad/xmobarrc"
+tryPP :: Handle -> PP
+tryPP h = defaultPP
+	{ ppOutput		= hPutStrLn h
+	, ppCurrent		= dzenColor (fore) (blu1) . pad
+	, ppVisible		= dzenColor (fore) (back) . pad
+	, ppHidden		= dzenColor (fore) (back) . pad
+	, ppHiddenNoWindows	= dzenColor (fore) (back) . pad
+	, ppUrgent		= dzenColor (fore) (red1) . pad
+	, ppOrder		= \(ws:l:t) -> [ws,l]
+	, ppSep			= ""
+	, ppWsSep       = ""
+	, ppLayout		= dzenColor (fore) (red1) .
+				( \t -> case t of
+					"Spacing 2 ResizableTall" -> " " ++ i ++ "tile.xbm) TALL "
+					"Full" -> " " ++ i ++ "dice1.xbm) FULL "
+					"Circle" -> " " ++ i ++ "dice2.xbm) CIRC "
+					_ -> " " ++ i ++ "tile.xbm) TALL "
+				)
+	} where i = "^i(~/.xmonad/icons/stlarch/"
 
+-- Colors
+blu1 = "#528588"
+red1 = "#BA5E57"
+fore = "#DEE3E0"
+back = "#343C48"
+
+-- Layour
+res = ResizableTall 1 (2/100) (1/2) []
+ful = noBorders (fullscreenFull Full)
+
+   -- useless gap --
+space = spacingRaw True (Border 50 20 20 20) True (Border 15 15 15 15) True
+layout = space $ avoidStruts (spacing 2 $ res) ||| Circle ||| ful
+
+panel = "dzen2 -ta l -p -w 337 -x 30 -y 15 -h 28 -e "
+-- myRightBar = "conky -c ~/.conkyrc | dzen2 -x 367 -y 15 -h 28 -w 1528 -p -ta r -e "
+
+-- Keybindings
 myKeys = customKeys removedKeys addedKeys
 
 removedKeys :: XConfig l -> [(KeyMask, KeySym)]
