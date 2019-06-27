@@ -25,4 +25,24 @@ $ cd ~/.dotfiles
 $ stow -R git
 ```
 
+## Xmonad
+
+Requires:
+* Haskell Stack
+* iwlib C headers:
+  * Debian: `sudo apt-get install libiw-dev`
+  * Arch: `pacman -S wireless_tools`
+* `git clone "https://github.com/xmonad/xmonad" ~/.xmonad/xmonad`
+* `git clone "https://github.com/xmonad/xmonad-contrib" ~/.xmonad/xmonad-contrib`
+* `git clone "https://github.com/jaor/xmobar" ~/.xmonad/xmobar`
+* `stack install`
+* `cp ~/.xmonad/xmonad.desktop /usr/share/xsessions`
+
+Whenever you update your xmonad, xmonad-contrib, or xmobar repositories, just `cd
+~/.xmonad` and run `stack install`
+
+More info on running and building Xmonad with Stack, look [here][2] and [here][3].
+
 [1]: https://www.gnu.org/software/stow/
+[2]: https://brianbuccola.com/how-to-install-xmonad-and-xmobar-via-stack/
+[3]: http://sitr.us/2018/05/13/build-xmonad-with-stack.html
