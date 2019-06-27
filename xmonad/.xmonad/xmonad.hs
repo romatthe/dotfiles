@@ -1,183 +1,229 @@
-import Data.List
-import System.IO
-
+import Control.Monad
 import XMonad
-import XMonad.Actions.CycleWS
 import XMonad.Actions.Navigation2D
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.EwmhDesktops (fullscreenEventHook)
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.SetWMName
-import XMonad.Layout.BinarySpacePartition
+import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.UrgencyHook
+
+import XMonad.Util.EZConfig (additionalKeys)
+import XMonad.Util.Run (spawnPipe, safeSpawn)
+import XMonad.Util.SpawnOnce (spawnOnce)
+
+import XMonad.Layout
+import XMonad.Layout.PerWorkspace
+import XMonad.Layout.NoBorders
+import XMonad.Layout.Spacing
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
-import XMonad.Layout.Spacing
-import XMonad.Layout.ResizableTile
-import XMonad.Layout.WindowArranger
-import XMonad.Layout.NoBorders
-import XMonad.Layout.Fullscreen
-import XMonad.Layout.Circle
-import XMonad.Layout.Gaps
-import qualified XMonad.StackSet as W
-import XMonad.Util.CustomKeys
-import XMonad.Util.Run(spawnPipe)
-import XMonad.Util.EZConfig(additionalKeys)
-import XMonad.Util.SpawnOnce
+import XMonad.Layout.Renamed
 
+import Graphics.X11.ExtraTypes.XF86
+import System.IO
+import XMonad.Actions.CycleWS
 
 main = do
-	bar <- spawnPipe panel
-	-- info <- spawnPipe myRightBar
-	xmonad $ defaultConfig
-		{ manageHook = manageDocks <+> myManageHook
-		, layoutHook = windowArrange layout
-		-- , startupHook = startUp
-		, workspaces = myWorkspaces
-		, modMask = mod4Mask
-		, terminal = "gnome-terminal"
-		, borderWidth = 7
-		, focusedBorderColor = "#6A555C" --"#404752"
-		, normalBorderColor = "#404752" --"#343C48"
-		, logHook = logbar bar
-    , keys = myKeys
-		}
+  wsPanel     <- spawnPipe wsBar
+  statsPanel  <- spawnPipe statsBar
+  xmonad
+    $ docks
+    $ withUrgencyHook NoUrgencyHook
+    $ defaultConfig
+      -- Simple stuff
+      { modMask             = modm
+      , terminal            = term
+      , focusFollowsMouse   = mouseFocus
+      , borderWidth         = bdrSize
+      , normalBorderColor   = bdrNormal
+      , focusedBorderColor  = bdrFocus
+      , workspaces          = workspaces'
 
--- Workspaces plus clickable functionality
-myWorkspaces 	:: [String]
-myWorkspaces	= click $ [ " PHOS ", " ETHE ", " ASTR ", " THEE ", " CRES "]
-		  where click l = [ "^ca(1, xdotool key super+"
-				  ++ show (n) ++ ")" ++ ws ++ "^ca()" |
-				  (i,ws) <- zip [1..] l,
-				  let n = i]
+      -- Lets hook up
+      , handleEventHook     = eventHook
+      , logHook             = logHook' wsPanel
+      , layoutHook          = layoutHook'
+      , manageHook          = manageHook'
+      --, startupHook         = startupHook'
+      } `additionalKeys` keyboard
 
-myManageHook = composeAll
-	[ className =? "feh" --> doFloat
-	, className =? "mpv"	--> doFloat
-	, manageDocks
-	]
+---- Simple stuff
+modm          = mod4Mask
+term          = "gnome-terminal"
+mouseFocus    = True
+workspaces'   = myWorkspaces
+keyboard      = myKeys
 
--- startUp :: X()
--- startUp = do
---	spawnOnce "compton"
---	spawnOnce "./.fehbg"
---	spawnOnce "xsetroot -cursor_name left_ptr"
---	spawnOnce "xrdb -load .Xresources"
---	spawnOnce "mpd"
---	setWMName "LG3D"
+----- Appearance
+bdrSize       = 5
+bdrNormal     = bgColor
+bdrFocus      = fgColor
+font          = "Misc Termsyn.Icons:size=13"
+monitorSize   = 1366
+monitor n     = show(round(monitorSize * n))
 
-logbar h = dynamicLogWithPP $ tryPP h
+----- WHAT COLOR?
+bgColor       = "#383644"
+fgColor       = "#FCEBDB"
+wsBgColor     = "#B79288"
+wsFgColor     = "#FFFFFF"
+barBgColor    = "#383644"
+barFgColor    = "#E2DED4"
+hintColor     = "#AA3355"
+layoutColor   = "#9D3E58"
 
-tryPP :: Handle -> PP
-tryPP h = defaultPP
-	{ ppOutput		= hPutStrLn h
-	, ppCurrent		= dzenColor (fore) (blu1) . pad
-	, ppVisible		= dzenColor (fore) (back) . pad
-	, ppHidden		= dzenColor (fore) (back) . pad
-	, ppHiddenNoWindows	= dzenColor (fore) (back) . pad
-	, ppUrgent		= dzenColor (fore) (red1) . pad
-	, ppOrder		= \(ws:l:t) -> [ws,l]
-	, ppSep			= ""
-	, ppWsSep       = ""
-	, ppLayout		= dzenColor (fore) (red1) .
-				( \t -> case t of
-					"Spacing 2 ResizableTall" -> " " ++ i ++ "tile.xbm) TALL "
-					"Full" -> " " ++ i ++ "dice1.xbm) FULL "
-					"Circle" -> " " ++ i ++ "dice2.xbm) CIRC "
-					_ -> " " ++ i ++ "tile.xbm) TALL "
-				)
-	} where i = "^i(~/.xmonad/icons/stlarch/"
+---- Panel
+leftBarSize   = monitor 0.7
+rightBarSize  = monitor 0.3
+leftBarPos    = "0"
+rightBarPos   = leftBarSize
+barHeight     = "26"
 
--- Colors
-blu1 = "#528588"
-red1 = "#BA5E57"
-fore = "#DEE3E0"
-back = "#343C48"
+wsBar      =
+  "dzen2 -dock -ta l      \
+  \ -bg '" ++ barBgColor  ++ "' \
+  \ -fg '" ++ barFgColor  ++ "' \
+  \ -w  '" ++ leftBarSize ++ "' \
+  \ -h  '" ++ barHeight   ++ "' \
+  \ -x  '" ++ leftBarPos  ++ "' \
+  \ -fn '" ++ font        ++ "' "
 
--- Layour
-res = ResizableTall 1 (2/100) (1/2) []
-ful = noBorders (fullscreenFull Full)
+statsPanel      =
+  "dzen2 -dock -ta r      \
+  \ -bg '" ++ barBgColor   ++ "'\
+  \ -fg '" ++ barFgColor   ++ "'\
+  \ -w  '" ++ rightBarSize ++ "'\
+  \ -h  '" ++ barHeight    ++ "'\
+  \ -x  '" ++ rightBarPos  ++ "'\
+  \ -fn '" ++ font         ++ "'"
 
-   -- useless gap --
-space = spacingRaw True (Border 50 20 20 20) True (Border 15 15 15 15) True
-layout = space $ avoidStruts (spacing 2 $ res) ||| Circle ||| ful
+statusConfig  = "conky -c ~/.xmonad/status.conf"
+statsBar      = statusConfig ++ " | " ++ statsPanel
 
-panel = "dzen2 -ta l -p -w 337 -x 30 -y 15 -h 28 -e "
--- myRightBar = "conky -c ~/.conkyrc | dzen2 -x 367 -y 15 -h 28 -w 1528 -p -ta r -e "
+---- Hooks
+eventHook     = fullscreenEventHook
+layoutHook'   = myLayoutHook
+logHook'      = myLogHook
+manageHook'   = myManageHook
+startupHook'  = myStartupHook
 
--- Keybindings
-myKeys = customKeys removedKeys addedKeys
+-- Log Hook
+myLogHook h =
+  dynamicLogWithPP $
+  dzenPP
+    { ppOutput  = hPutStrLn h
+    , ppCurrent = dzenColor (fg) (bg) . pad
+    , ppVisible = pad
+    , ppHidden  = pad
+    , ppUrgent  = dzenColor (fg) (hint) . pad
+    , ppSep     = ""
+    , ppOrder   = \(ws:l:t:_) -> [l, ws]
+    , ppLayout  = dzenColor (fg) (layoutBg) . pad . pad .
+        ( \t -> case t of
+          "Tall" -> "þ"
+          "Mirror Tall" -> "ü"
+          "Full" -> "ÿ"
+          _ -> t
+        )
+    }
+  where
+    bg = wsBgColor
+    fg = wsFgColor
+    hint = hintColor
+    layoutBg = layoutColor
 
-removedKeys :: XConfig l -> [(KeyMask, KeySym)]
-removedKeys XConfig {modMask = modm} =
-    [ (modm              , xK_space)  -- Default for layout switching
-    , (modm .|. shiftMask, xK_Return) -- Default for opening a terminal
-    , (modm .|. shiftMask, xK_c)      -- Default for closing the focused window
-    ]
+-- Workspaces
+myWorkspaces = ws $ ["TERM", "INET", "DEV", "ENT", "PLAY", "TOOL"]
+  where
+    ws l =
+      [ "^ca(1,xdotool key super+" ++ show n ++ ")  " ++ ws ++ "  ^ca()"
+      | (i, ws) <- zip [1 ..] l
+      , let n = i
+      ]
 
-addedKeys :: XConfig l -> [((KeyMask, KeySym), X ())]
-addedKeys conf @ XConfig {modMask = modm} =
-  [ -- Application launcher
-    ((modm, xK_space) , spawn "rofi -show drun -theme romatthe")
+-- Layout Hook
+myLayoutHook =
+  avoidStruts
+  $ smartBorders
+  $ mkToggle (NOBORDERS ?? FULL ?? EOT)
+  $ standardLayout
+  where
+    standardLayout =
+      renamed [CutWordsLeft 2] $
+      smartSpacingWithEdge 8 $ layoutHook defaultConfig
 
-    -- Terminal
-  , ((modm, xK_Return), spawn $ XMonad.terminal conf)
-
-    -- Close application
-  , ((modm, xK_w), kill)
-
-    -- Switch to last workspace
-  , ((modm, xK_Tab), toggleWS)
-
-    -- Rotate windows
-  , ((modm, xK_r), sendMessage Rotate)
-
-    -- Swap windows
-  , ((modm, xK_t), sendMessage Swap)
-
-    -- Layout switching
-  , ((modm .|. shiftMask, xK_t), sendMessage NextLayout)
-
-  -- Fullscreen toggle
-  , ((modm, xK_f), sendMessage $ Toggle FULL)
-
-    -- Directional navigation of windows
-  , ((modm, xK_l), windowGo R False)
-  , ((modm, xK_h), windowGo L False)
-  , ((modm, xK_k), windowGo U False)
-  , ((modm, xK_j), windowGo D False)
-  , ((modm, xK_Right), windowGo R False)
-  , ((modm, xK_Left),  windowGo L False)
-  , ((modm, xK_Up),    windowGo U False)
-  , ((modm, xK_Down),  windowGo D False)
-
-    -- Expand and shrink windows
-  , ((modm .|. controlMask,                xK_l), sendMessage $ ExpandTowards R)
-  , ((modm .|. controlMask,                xK_h), sendMessage $ ExpandTowards L)
-  , ((modm .|. controlMask,                xK_j), sendMessage $ ExpandTowards D)
-  , ((modm .|. controlMask,                xK_k), sendMessage $ ExpandTowards U)
-  , ((modm .|. controlMask .|. shiftMask , xK_l), sendMessage $ ShrinkFrom R)
-  , ((modm .|. controlMask .|. shiftMask , xK_h), sendMessage $ ShrinkFrom L)
-  , ((modm .|. controlMask .|. shiftMask , xK_j), sendMessage $ ShrinkFrom D)
-  , ((modm .|. controlMask .|. shiftMask , xK_k), sendMessage $ ShrinkFrom U)
-
-    -- Expand and shrink floating windows
-  , ((modm .|. controlMask, xK_n), sendMessage Expand)
-  , ((modm .|. controlMask, xK_m), sendMessage Shrink)
-
-    -- Brightness control
-  , ((0,         0x1008ff41), spawn "sudo /home/rleppink/.local/bin/tpb -t")
-  , ((modm,         xK_F3), spawn "sudo /home/rleppink/.local/bin/tpb -t")
-  , ((modm,         xK_F1), spawn "sudo /home/rleppink/.local/bin/tpb -d")
-  , ((modm,         xK_F2), spawn "sudo /home/rleppink/.local/bin/tpb -i")
-
-    -- XF86AudioMute
-  , ((0, 0x1008ff12), spawn "amixer set Master toggle > /dev/null")
-  , ((modm, xK_F10), spawn "amixer set Master toggle > /dev/null")
-
-    -- XF86AudioRaiseVolume
-  , ((0, 0x1008ff13), spawn "amixer set Master 5%+ -M > /dev/null")
-  , ((modm, xK_F12), spawn "amixer set Master 5%+ -M > /dev/null")
-
-    -- XF86AudioLowerVolume
-  , ((0, 0x1008ff11), spawn "amixer set Master 5%- -M > /dev/null")
-  , ((modm, xK_F11), spawn "amixer set Master 5%- -M > /dev/null")
+-- Manage Hook
+myManageHook =
+  composeAll . concat $
+  [ [ className =? c --> doShift (w !! 1) | c <- inetApp ]
+  , [ className =? c --> doShift (w !! 2) | c <- devApp ]
+  , [ className =? c --> doShift (w !! 3) | c <- entApp ]
+  , [ className =? c --> doShift (w !! 4) | c <- playApp ]
+  , [ className =? c --> doFloat          | c <- floatingApp ]
+  , [ className =? c --> doIgnore         | c <- ignoreApp ]
+  , [ isDialog       --> doCenterFloat ]
+  , [ isRole         --> doCenterFloat ]
+  , [ manageDocks ]
+  , [ manageHook def ]
   ]
+  where
+    w = workspaces'
+    isRole = stringProperty "WM_WINDOW_ROLE" =? "pop-up"
+    inetApp = ["Chromium"]
+    devApp =
+      [ "SecureCRT", "GNS3", "VirtualBox Manager"
+      , "VirtualBox Machine", "jetbrains-studio"
+      , "Code", "oni"
+      ]
+    entApp = ["MPlayer", "smplayer", "mpv", "Gimp"]
+    playApp = ["player", "Genymotion"]
+    floatingApp = ["SecureCRT", "TeamViewer", "Xmessage"]
+    ignoreApp = ["desktop", "desktop_window", "stalonetray", "trayer"]
+
+-- Startup Hook
+myStartupHook = do
+  spawnOnce "feh --bg-fill ~/.xmonad/background.png"
+  spawnOnce "xsetroot -cursor_name left_ptr"
+  spawnOnce "setxkbmap -option 'altwin:swap_alt_win'"
+  spawnOnce "compton --config /dev/null -bGC"
+  spawnOnce "xclip"
+
+-- Keymapping
+myKeys =
+  [ ((m, xK_b), spawn "google-chrome-stable")
+  , ((m, xK_space), spawn "rofi -show drun -theme romatthe")
+  , ((m, xK_f), sendMessage $ Toggle FULL)
+  , ((m, xK_Right), windowGo R False)
+  , ((m, xK_Left),  windowGo L False)
+  , ((m, xK_Up),    windowGo U False)
+  , ((m, xK_Down),  windowGo D False)
+  , ((m, xK_s), sendMessage ToggleStruts)
+  , ((m, xK_BackSpace), focusUrgent)
+  , ((m, xK_equal), toggleWS)
+  , ((m, xK_grave), toggleWS)
+  , ((m .|. shiftMask, xK_t), sendMessage NextLayout)
+  -- , ((m, xK_Caps_Lock), sendMessage $ Toggle FULL)
+  , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -10")
+  , ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +10")
+  , ((0, xK_Print), spawn "maim -s | xclip -selection clipboard -t image/png")
+  , ((s, xK_Print), spawn "maim | xclip -selection clipboard -t image/png")
+  ]
+  where
+    m = modm
+    s = shiftMask
+    c = controlMask
+    dmenu =
+      "dmenu_run -i \
+      \ -fn '" ++ fn ++ "' \
+      \ -w '" ++ w ++ "' \
+      \ -h '" ++ h ++ "' \
+      \ -x '" ++ x ++ "' \
+      \ -nb '" ++ nb ++ "' \
+      \ -sb '" ++ sb ++ "'"
+      where
+        w = monitor 0.3
+        x = monitor 0.7
+        h = "26"
+        fn = font
+        nb = bgColor
+        sb = layoutColor

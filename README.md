@@ -32,6 +32,9 @@ Requires:
 * iwlib C headers:
   * Debian: `sudo apt-get install libiw-dev`
   * Arch: `pacman -S wireless_tools`
+* dzen2
+* conky
+* xdotool
 * `git clone "https://github.com/xmonad/xmonad" ~/.xmonad/xmonad`
 * `git clone "https://github.com/xmonad/xmonad-contrib" ~/.xmonad/xmonad-contrib`
 * `git clone "https://github.com/jaor/xmobar" ~/.xmonad/xmobar`
