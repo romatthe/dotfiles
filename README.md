@@ -35,13 +35,19 @@ Requires:
 * `git clone "https://github.com/xmonad/xmonad" ~/.xmonad/xmonad`
 * `git clone "https://github.com/xmonad/xmonad-contrib" ~/.xmonad/xmonad-contrib`
 * `git clone "https://github.com/jaor/xmobar" ~/.xmonad/xmobar`
-* `stack install`
+* `xmonad --recompile && stack install`
 * `cp ~/.xmonad/xmonad.desktop /usr/share/xsessions`
 
 Whenever you update your xmonad, xmonad-contrib, or xmobar repositories, just `cd
 ~/.xmonad` and run `stack install`
 
 More info on running and building Xmonad with Stack, look [here][2] and [here][3].
+
+## Dunst
+
+Requires:
+* Dunst installed on the system
+* `libnotify` installed on the system
 
 [1]: https://www.gnu.org/software/stow/
 [2]: https://brianbuccola.com/how-to-install-xmonad-and-xmobar-via-stack/
