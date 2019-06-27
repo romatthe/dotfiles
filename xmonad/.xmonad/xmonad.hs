@@ -192,6 +192,8 @@ myStartupHook = do
 myKeys =
   [ ((m, xK_b), spawn "google-chrome-stable")
   , ((m, xK_space), spawn "rofi -show drun -theme romatthe")
+  , ((m, xK_Return), spawn term)
+  , ((m, xK_w), kill)
   , ((m, xK_f), sendMessage $ Toggle FULL)
   , ((m, xK_Right), windowGo R False)
   , ((m, xK_Left),  windowGo L False)
