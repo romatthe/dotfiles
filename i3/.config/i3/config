@@ -69,16 +69,22 @@ bindsym XF86MonBrightnessUp exec --no-startup-id "light -A 10"
 bindsym XF86MonBrightnessDown exec --no-startup-id "light -U 10"
 
 # Workspace
-## Terminal
-set $ws1 "1: TTY"
-set $ws2 "2: WEB"
-set $ws3 "3: LAB"
-set $ws4 "4: MED"
-set $ws5 "5: SYS"
-set $ws6 "6: COM"
-set $ws7 "7: DOC"
 
 ## Workspace keybinding
+#set $ws2 "2: WEB"
+#set $ws3 "3: LAB"
+#set $ws4 "4: MED"
+#set $ws5 "5: SYS"
+#set $ws6 "6: COM"
+#set $ws7 "7: DOC"
+set $ws1 "1: TTY"
+set $ws2 "2:WEB"
+set $ws3 "3:LAB"
+set $ws4 "4:MED"
+set $ws5 "5:SYS"
+set $ws6 "6:COM"
+set $ws7 "7:DOC"
+
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3

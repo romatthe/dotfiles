@@ -22,8 +22,7 @@ fixed-center = true
 width = 100%
 height = 24
 
-font-0 = "Misc Termsyn:size=12;1"
-font-1 = "Wuncon Siji:size=12;1"
+font-0 = "Hack:size=12;1"
 
 background = ${color.base}
 foreground = ${color.brown}
@@ -59,18 +58,18 @@ type = internal/i3
 strip-wsnumbers = true
 wrapping-scroll = false
 
-label-focused =%name%
+label-focused = %name%
 label-focused-foreground = ${color.pink}
 label-focused-background = ${color.base}
 label-focused-padding = 1
 
-label-unfocused =%name%
+label-unfocused =%icon%
 label-unfocused-padding = 1
 
-label-visible =%name%
+label-visible =%icon%
 label-visible-padding = 1
 
-label-urgent =%name%
+label-urgent =%icon%
 label-urgent-background = ${color.base}
 label-urgent-foreground = ${color.red}
 label-urgent-padding = 1
