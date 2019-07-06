@@ -18,8 +18,10 @@ import XMonad.Layout.Spacing
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.Renamed
-
+import qualified XMonad.StackSet as W
+import Graphics.X11
 import Graphics.X11.ExtraTypes.XF86
+import Graphics.X11.Xinerama
 import System.IO
 import XMonad.Actions.CycleWS
 
@@ -59,7 +61,7 @@ bdrSize       = 5
 bdrNormal     = bgColor
 bdrFocus      = fgColor
 font          = "Misc Termsyn.Icons:size=13"
-monitorSize   = 1366
+monitorSize   = 1920
 monitor n     = show(round(monitorSize * n))
 
 ----- WHAT COLOR?
@@ -133,7 +135,11 @@ myLogHook h =
     layoutBg = layoutColor
 
 -- Workspaces
-myWorkspaces = ws $ ["TERM", "INET", "DEV", "ENT", "PLAY", "TOOL"]
+iconify ic ws = dir ++ ic ++ ") " ++ ws ++ " "
+  where
+    dir =" ^i(/home/romatthe/.xmonad/icons/stlarch/"
+
+myWorkspaces = ws $ [ iconify "mem1.xbm" "TERM", "INET", "DEV", "ENT", "PLAY", "TOOL"]
   where
     ws l =
       [ "^ca(1,xdotool key super+" ++ show n ++ ")  " ++ ws ++ "  ^ca()"
