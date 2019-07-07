@@ -5,6 +5,7 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops (fullscreenEventHook)
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.SetWMName
 import XMonad.Hooks.UrgencyHook
 
 import XMonad.Util.EZConfig (additionalKeys)
@@ -19,11 +20,16 @@ import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.Renamed
 import qualified XMonad.StackSet as W
+import XMonad.Util.EZConfig
 import Graphics.X11
 import Graphics.X11.ExtraTypes.XF86
 import Graphics.X11.Xinerama
 import System.IO
 import XMonad.Actions.CycleWS
+
+import Config.Keys
+import Config.Options
+import Theme.Nord
 
 main = do
   wsPanel     <- spawnPipe wsBar
@@ -33,27 +39,28 @@ main = do
     $ withUrgencyHook NoUrgencyHook
     $ defaultConfig
       -- Simple stuff
-      { modMask             = modm
-      , terminal            = term
-      , focusFollowsMouse   = mouseFocus
-      , borderWidth         = bdrSize
-      , normalBorderColor   = bdrNormal
-      , focusedBorderColor  = bdrFocus
-      , workspaces          = workspaces'
+      { terminal           = term options
+      , focusFollowsMouse  = ffm options
+      , modMask            = mask options
+      , workspaces         = spaces options
+      -- Theme
+      , normalBorderColor  = unfocused theme
+      , focusedBorderColor = focused theme
+      , borderWidth        = border theme
 
+      -- Keybindings
+      --, keys               = keybindings
       -- Lets hook up
-      , handleEventHook     = eventHook
-      , logHook             = logHook' wsPanel
-      , layoutHook          = layoutHook'
-      , manageHook          = manageHook'
-      --, startupHook         = startupHook'
-      } `additionalKeys` keyboard
+      , handleEventHook    = eventHook
+      , logHook            = logHook' wsPanel
+      , layoutHook         = layoutHook'
+      , manageHook         = manageHook'
+      , startupHook        = setWMName "LG3D"
+      } `additionalKeysP` keybindings
 
 ---- Simple stuff
 modm          = mod4Mask
-term          = "gnome-terminal"
 mouseFocus    = True
-workspaces'   = myWorkspaces
 keyboard      = myKeys
 
 ----- Appearance
@@ -107,7 +114,6 @@ eventHook     = fullscreenEventHook
 layoutHook'   = myLayoutHook
 logHook'      = myLogHook
 manageHook'   = myManageHook
-startupHook'  = myStartupHook
 
 -- Log Hook
 myLogHook h =
@@ -133,19 +139,6 @@ myLogHook h =
     fg = wsFgColor
     hint = hintColor
     layoutBg = layoutColor
-
--- Workspaces
-iconify ic ws = dir ++ ic ++ ") " ++ ws ++ " "
-  where
-    dir =" ^i(/home/romatthe/.xmonad/icons/stlarch/"
-
-myWorkspaces = ws $ [ iconify "mem1.xbm" "TERM", "INET", "DEV", "ENT", "PLAY", "TOOL"]
-  where
-    ws l =
-      [ "^ca(1,xdotool key super+" ++ show n ++ ")  " ++ ws ++ "  ^ca()"
-      | (i, ws) <- zip [1 ..] l
-      , let n = i
-      ]
 
 -- Layout Hook
 myLayoutHook =
@@ -173,7 +166,7 @@ myManageHook =
   , [ manageHook def ]
   ]
   where
-    w = workspaces'
+    w = spaces options
     isRole = stringProperty "WM_WINDOW_ROLE" =? "pop-up"
     inetApp = ["Chromium"]
     devApp =
@@ -186,19 +179,11 @@ myManageHook =
     floatingApp = ["SecureCRT", "TeamViewer", "Xmessage"]
     ignoreApp = ["desktop", "desktop_window", "stalonetray", "trayer"]
 
--- Startup Hook
-myStartupHook = do
-  spawnOnce "feh --bg-fill ~/.xmonad/background.png"
-  spawnOnce "xsetroot -cursor_name left_ptr"
-  spawnOnce "setxkbmap -option 'altwin:swap_alt_win'"
-  spawnOnce "compton --config /dev/null -bGC"
-  spawnOnce "xclip"
-
 -- Keymapping
 myKeys =
   [ ((m, xK_b), spawn "google-chrome-stable")
   , ((m, xK_space), spawn "rofi -show drun -theme romatthe")
-  , ((m, xK_Return), spawn term)
+  , ((m, xK_Return), spawn $ term options)
   , ((m, xK_w), kill)
   , ((m, xK_f), sendMessage $ Toggle FULL)
   , ((m, xK_Right), windowGo R False)
