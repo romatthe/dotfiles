@@ -33,8 +33,6 @@ import Hooks.Log
 import Theme.Nord
 
 main = do
-  wsPanel     <- spawnPipe wsBar
-  statsPanel  <- spawnPipe statsBar
   xmonad
     $ docks
     $ withUrgencyHook NoUrgencyHook
