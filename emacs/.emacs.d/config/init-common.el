@@ -64,7 +64,7 @@
                        :fork (:host github
 				    :repo "romatthe/emacs-dashboard"))
   :config
-  (setq dashboard-startup-banner "~/.emacs.d/img/ness_transp.png"
+  (setq dashboard-startup-banner "~/.emacs.d/img/ness_hamburger_circle.png"
 	dashboard-items '((recents  . 5)
                           (projects . 5)
 			  (agenda . 5)))
