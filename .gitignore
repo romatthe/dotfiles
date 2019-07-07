@@ -5,3 +5,12 @@ projectile-bookmarks.eld
 recentf
 auto-save-list/
 *.el~
+*.hi
+*.o
+.idea/
+stack.yaml.lock
+xmonad-x86_64-linux
+xmonad.errors
+xmonad/.xmonad/xmonad/
+xmonad/.xmonad/xmobar/
+xmonad/.xmonad/xmonad-contrib/
