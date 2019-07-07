@@ -29,6 +29,7 @@ import XMonad.Actions.CycleWS
 
 import Config.Keys
 import Config.Options
+import Hooks.Log
 import Theme.Nord
 
 main = do
@@ -48,14 +49,13 @@ main = do
       , focusedBorderColor = focused theme
       , borderWidth        = border theme
 
-      -- Keybindings
-      --, keys               = keybindings
       -- Lets hook up
       , handleEventHook    = eventHook
-      , logHook            = logHook' wsPanel
+      --, logHook            = logHook' wsPanel
+      , logHook            = wsLogHook
       , layoutHook         = layoutHook'
       , manageHook         = manageHook'
-      , startupHook        = setWMName "LG3D"
+      , startupHook        = starts options
       } `additionalKeysP` keybindings
 
 ---- Simple stuff
