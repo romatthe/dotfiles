@@ -6,6 +6,15 @@ unsetopt beep
 bindkey -e
 # End of lines configured by zsh-newuser-install
 
+# Navigation keys
+if [[ $SYSTEM == 'Linux' ]]; then
+    bindkey "^[[1;5C" forward-word
+    bindkey "^[[1;5D" backward-word
+else
+    bindkey "^[^[[D" forward-word
+    bindkey "^[^[[C" backward-word
+fi
+
 zstyle :compinstall filename '/home/romatthe/.zshrc'
 
 # Enable compinit and allow bash-completions
