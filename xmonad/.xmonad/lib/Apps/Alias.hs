@@ -1,4 +1,4 @@
 module Apps.Alias where
 
 panel :: String
-panel = "~/.scripts/init-polybar"
+panel = "polybar xmonad"
