@@ -19,7 +19,7 @@ import Config.Options
 keybindings =
   --[ ((m, xK_b), spawn "google-chrome-stable")
   [ ("M-b",        spawn "google-chrome-stable")
-  , ("M-<Space>",  spawn "rofi -show drun -theme romatthe")
+  , ("M-<Space>",  spawn "rofi -modi drun -show drun -theme romatthe")
   , ("M-<Return>", spawn $ term options)
   , ("M-w",        kill)
   , ("M-f",        sendMessage $ Toggle FULL)
