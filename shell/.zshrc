@@ -8,11 +8,6 @@ bindkey -e
 
 zstyle :compinstall filename '/home/romatthe/.zshrc'
 
-# Powerline support
-if [[ $SYSTEM == 'Linux' ]]; then
-    . /usr/share/powerline/zsh/powerline.zsh
-fi
-
 # Enable compinit and allow bash-completions
 autoload -Uz compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
