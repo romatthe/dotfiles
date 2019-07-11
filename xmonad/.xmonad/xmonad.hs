@@ -1,4 +1,6 @@
 import Control.Monad
+import Data.List
+
 import XMonad
 import XMonad.Actions.Navigation2D
 import XMonad.Hooks.DynamicLog
@@ -19,6 +21,7 @@ import XMonad.Layout.Spacing
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.Renamed
+import qualified XMonad.DBus as D
 import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
 import Graphics.X11
@@ -33,6 +36,8 @@ import Hooks.Log
 import Theme.Nord
 
 main = do
+  dbus <- D.connect
+  D.requestAccess dbus
   xmonad
     $ docks
     $ withUrgencyHook NoUrgencyHook
@@ -50,7 +55,8 @@ main = do
       -- Lets hook up
       , handleEventHook    = eventHook
       --, logHook            = logHook' wsPanel
-      , logHook            = wsLogHook
+      --, logHook            = wsLogHook
+      , logHook            = dynamicLogWithPP (myLogHook dbus)
       , layoutHook         = layoutHook'
       , manageHook         = manageHook'
       , startupHook        = starts options
@@ -86,6 +92,23 @@ leftBarPos    = "0"
 rightBarPos   = leftBarSize
 barHeight     = "26"
 
+-- loghook
+myLogHook dbus = def {
+      ppOutput = D.send dbus
+    , ppTitle = \i -> ""
+    , ppSep = ""
+    , ppWsSep = ""
+    , ppCurrent = \i -> "\xf053" ++ i ++ "\xf054"
+    , ppHidden = \i -> " " ++ i ++ " "
+    , ppHiddenNoWindows = \i -> " " ++ i ++ " "
+    , ppVisibleNoWindows = Just (\i -> " " ++ i ++ " ")
+    , ppLayout = \l -> ""
+    }
+    where w i = if i == "1" then "\xf120" 
+                else if i == "2" then "\xf269"
+                else if i == "3" then "\xf15b"
+                else i
+
 wsBar      =
   "dzen2 -dock -ta l      \
   \ -bg '" ++ barBgColor  ++ "' \
@@ -112,31 +135,6 @@ eventHook     = fullscreenEventHook
 layoutHook'   = myLayoutHook
 logHook'      = myLogHook
 manageHook'   = myManageHook
-
--- Log Hook
-myLogHook h =
-  dynamicLogWithPP $
-  dzenPP
-    { ppOutput  = hPutStrLn h
-    , ppCurrent = dzenColor (fg) (bg) . pad
-    , ppVisible = pad
-    , ppHidden  = pad
-    , ppUrgent  = dzenColor (fg) (hint) . pad
-    , ppSep     = ""
-    , ppOrder   = \(ws:l:t:_) -> [l, ws]
-    , ppLayout  = dzenColor (fg) (layoutBg) . pad . pad .
-        ( \t -> case t of
-          "Tall" -> "þ"
-          "Mirror Tall" -> "ü"
-          "Full" -> "ÿ"
-          _ -> t
-        )
-    }
-  where
-    bg = wsBgColor
-    fg = wsFgColor
-    hint = hintColor
-    layoutBg = layoutColor
 
 -- Layout Hook
 myLayoutHook =

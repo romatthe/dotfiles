@@ -4,6 +4,7 @@ packages:
 - xmobar
 - xmonad
 - xmonad-contrib
+- xmonad-dbus
 
 extra-deps:
 - iwlib-0.1.0

@@ -1,4 +1,4 @@
 module Apps.Alias where
 
 panel :: String
-panel = "polybar xmonad"
+panel = "~/.config/polybar/launch.sh"
