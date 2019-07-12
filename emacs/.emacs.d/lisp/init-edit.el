@@ -64,11 +64,6 @@
   :ensure nil
   :hook (after-init . delete-selection-mode))
 
-;; Rectangle
-(use-package rect
-  :ensure nil
-  :bind (("<C-return>" . rectangle-mark-mode)))
-
 ;; Automatically reload files was modified by external program
 (use-package autorevert
   :ensure nil
@@ -104,36 +99,6 @@
   :hook (after-init . avy-setup-default)
   :config (setq avy-background t))
 
-;; Kill text between the point and the character CHAR
-(use-package avy-zap
-  :bind (("M-z" . avy-zap-to-char-dwim)
-         ("M-Z" . avy-zap-up-to-char-dwim)))
-
-;; Quickly follow links
-(use-package ace-link
-  :defines (org-mode-map
-            gnus-summary-mode-map
-            gnus-article-mode-map
-            ert-results-mode-map)
-  :bind ("M-o" . ace-link-addr)
-  :hook (after-init . ace-link-setup-default)
-  :config
-  (with-eval-after-load 'org
-    (bind-key "M-o" #'ace-link-org org-mode-map))
-  (with-eval-after-load 'gnus
-    (bind-keys
-     :map gnus-summary-mode-map
-     ("M-o" . ace-link-gnus)
-     :map gnus-article-mode-map
-     ("M-o" . ace-link-gnus)))
-  (with-eval-after-load 'ert
-    (bind-key "o" #'ace-link-help ert-results-mode-map)))
-
-;; Jump to Chinese characters
-(use-package ace-pinyin
-  :diminish
-  :hook (after-init . ace-pinyin-global-mode))
-
 ;; Minor mode to aggressively keep your code always indented
 (use-package aggressive-indent
   :diminish
@@ -163,19 +128,11 @@
          (null (string-match "\\([;{}]\\|\\b\\(if\\|for\\|while\\)\\b\\)"
                              (thing-at-point 'line))))))
 
-;; Show number of matches in mode-line while searching
-(use-package anzu
-  :diminish
-  :bind (([remap query-replace] . anzu-query-replace)
-         ([remap query-replace-regexp] . anzu-query-replace-regexp)
-         :map isearch-mode-map
-         ([remap isearch-query-replace] . anzu-isearch-query-replace)
-         ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
-  :hook (after-init . global-anzu-mode))
-
 ;; An all-in-one comment command to rule them all
 (use-package comment-dwim-2
-  :bind ([remap comment-dwim] . comment-dwim-2)) ;
+  :bind (("C-;" . comment-dwim-2))
+  :config
+  (unbind-key "M-;" global-map))
 
 ;; Drag stuff (lines, words, region, etc...) around
 (use-package drag-stuff
