@@ -38,6 +38,7 @@ Requires:
 * `git clone "https://github.com/xmonad/xmonad" ~/.xmonad/xmonad`
 * `git clone "https://github.com/xmonad/xmonad-contrib" ~/.xmonad/xmonad-contrib`
 * `git clone "https://github.com/jaor/xmobar" ~/.xmonad/xmobar`
+* `git clone "https://github.com/troydm/xmonad-dbus" ~/.xmonad/xmonad-dbus` 
 * `xmonad --recompile && stack install`
 * `cp ~/.xmonad/xmonad.desktop /usr/share/xsessions`
 
