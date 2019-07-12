@@ -7,13 +7,10 @@ bindkey -e
 # End of lines configured by zsh-newuser-install
 
 # Navigation keys
-if [[ $SYSTEM == 'Linux' ]]; then
-    bindkey "^[[1;5C" forward-word
-    bindkey "^[[1;5D" backward-word
-else
-    bindkey "^[^[[D" forward-word
-    bindkey "^[^[[C" backward-word
-fi
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
+bindkey "^[^[[D" forward-word
+bindkey "^[^[[C" backward-word
 
 zstyle :compinstall filename '/home/romatthe/.zshrc'
 
