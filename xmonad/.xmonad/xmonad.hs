@@ -58,7 +58,8 @@ main = do
       --, logHook            = wsLogHook
       , logHook            = dynamicLogWithPP (myLogHook dbus)
       , layoutHook         = layoutHook'
-      , manageHook         = manageHook'
+      -- , manageHook         = manageHook'
+      , manageHook         = manageDocks <+> (isFullscreen --> doFullFloat) <+> manageHook defaultConfig
       , startupHook        = starts options
       } `additionalKeysP` keybindings
 
@@ -98,16 +99,20 @@ myLogHook dbus = def {
     , ppTitle = \i -> ""
     , ppSep = ""
     , ppWsSep = ""
-    , ppCurrent = \i -> "%{T5}%{R} " ++ i ++ " %{R-}%{T-}"
-    , ppHidden = \i -> " " ++ i ++ " "
-    , ppHiddenNoWindows = \i -> " " ++ i ++ " "
-    , ppVisibleNoWindows = Just (\i -> " " ++ i ++ " ")
+    , ppCurrent = \i -> "%{T5}%{R} " ++ (w i) ++ "   %{R-}%{T-}"
+    , ppHidden = \i -> " " ++ (w i) ++ " "
+    , ppHiddenNoWindows = \i -> " " ++ (w i) ++ " "
+    , ppVisibleNoWindows = Just (\i -> " " ++ (w i) ++ " ")
     , ppLayout = \l -> ""
     }
-    where w i = if i == "1" then "\xf120" 
-                else if i == "2" then "\xf269"
-                else if i == "3" then "\xf15b"
-                else i
+    where
+        w "TERM" = "%{T4}\xf120%{T-}"
+        w "INET" = "%{T4}\xf268%{T-}"
+        w "DEV"  = "%{T4}\xf1cb%{T-}"
+        w "ENT"  = "%{T4}\xf11b%{T-}"
+        w "PLAY" = "%{T4}\xf001%{T-}"
+        w "TOOL" = "%{T4}\xf0ad%{T-}"
+        w i      = i
 
 wsBar      =
   "dzen2 -dock -ta l      \
