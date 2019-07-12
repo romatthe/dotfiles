@@ -137,11 +137,14 @@
 ;; Drag stuff (lines, words, region, etc...) around
 (use-package drag-stuff
   :diminish
+  :bind (("M-S-<up>" .    drag-stuff-up)
+         ("M-S-<down>" .  drag-stuff-down)
+         ("M-S-<left>" .  drag-stuff-left)
+         ("M-S-<right>" . drag-stuff-right))
   :commands drag-stuff-define-keys
   :hook (after-init . drag-stuff-global-mode)
   :config
-  (add-to-list 'drag-stuff-except-modes 'org-mode)
-  (drag-stuff-define-keys))
+  (add-to-list 'drag-stuff-except-modes 'org-mode))
 
 ;; A comprehensive visual interface to diff & patch
 (use-package ediff
