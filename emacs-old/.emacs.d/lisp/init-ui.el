@@ -1,9 +1,9 @@
-;;; -*- lexical-binding: t -*-
+;; init-ui.el --- Initialize ui configurations.	-*- lexical-binding: t -*-
 
-;; Copyright (C) 2018-2019 Robin Mattheussen
+;; Copyright (C) 2019 Vincent Zhang
 
-;; Author: Robin Mattheussen <robin.mattheussen@gmail.com>
-;; URL: https://github.com/romatthe/dotfiles
+;; Author: Vincent Zhang <seagle0128@gmail.com>
+;; URL: https://github.com/seagle0128/.emacs.d
 
 ;; This file is not part of GNU Emacs.
 ;;
@@ -25,17 +25,21 @@
 
 ;;; Commentary:
 ;;
-;; Configuration of Emacs' UI elements
+;; Visual (UI) configurations.
 ;;
 
 ;;; Code:
 
 (eval-when-compile
-  (require 'init-sysinfo))
+  (require 'init-const)
+  (require 'init-custom))
 
-;; Default font
-;;(add-to-list 'default-frame-alist '(font . "Iosevka-11"))
-(set-frame-font "Iosevka-11" nil t)
+;; Logo
+(setq fancy-splash-image centaur-logo)
+
+;; Title
+(setq frame-title-format '("Centaur Emacs - %b")
+      icon-title-format frame-title-format)
 
 (when sys/mac-x-p
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
@@ -46,27 +50,91 @@
                 (set-frame-parameter nil 'ns-appearance bg)
                 (setcdr (assq 'ns-appearance default-frame-alist) bg)))))
 
-;; Menu /Tool / Scroll bars
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
+;; Menu/Tool/Scroll bars
+(unless emacs/>=27p        ; Move to early init-file in 27
+  (unless sys/mac-x-p
+    (push '(menu-bar-lines . 0) default-frame-alist))
+  (push '(tool-bar-lines . 0) default-frame-alist)
+  (push '(vertical-scroll-bars) default-frame-alist))
 
-;; The Doom mode-line Mode-line
+;; Mode-line
 (use-package doom-modeline
-  :demand t
   :hook (after-init . doom-modeline-mode)
   :init
   ;; prevent flash of unstyled modeline at startup
   (unless after-init-time
     (setq-default mode-line-format nil))
-  :custom
-  (doom-modeline-major-mode-color-icon t)
-  (doom-modeline-minor-modes nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-buffer-file-name-style 'relative-from-project))
+  :config
+  (setq doom-modeline-major-mode-color-icon t
+        doom-modeline-minor-modes nil
+        doom-modeline-mu4e nil))
 
 (use-package hide-mode-line
   :hook (((completion-list-mode completion-in-region-mode) . hide-mode-line-mode)))
+
+;; Theme
+(defvar after-load-theme-hook nil
+  "Hook run after a color theme is loaded using `load-theme'.")
+(defun run-after-load-theme-hook (&rest _)
+  "Run `after-load-theme-hook'."
+  (run-hooks 'after-load-theme-hook))
+(advice-add #'load-theme :after #'run-after-load-theme-hook)
+
+(defun standardize-theme (theme)
+  "Standardize THEME."
+  (pcase theme
+    ('default 'doom-one)
+    ('classic 'doom-molokai)
+    ('doom 'doom-one)
+    ('dark 'doom-Iosvkem)
+    ('light 'doom-one-light)
+    ('daylight 'doom-tomorrow-day)
+    (_ (or theme 'doom-one))))
+
+(defun is-doom-theme-p (theme)
+  "Check whether the THEME is a doom theme. THEME is a symbol."
+  (string-prefix-p "doom" (symbol-name (standardize-theme theme))))
+
+(defun centaur-load-theme (theme)
+  "Set color THEME."
+  (interactive
+   (list
+    (intern (completing-read "Load theme: "
+                             '(default classic dark light daylight)))))
+  (let ((theme (standardize-theme theme)))
+    (mapc #'disable-theme custom-enabled-themes)
+    (load-theme theme t)))
+
+(if (is-doom-theme-p centaur-theme)
+    (progn
+      (use-package doom-themes
+        :init (centaur-load-theme centaur-theme)
+        :config
+        ;; Enable flashing mode-line on errors
+        (doom-themes-visual-bell-config)
+        (set-face-attribute 'doom-visual-bell nil
+                            :background (face-foreground 'error)
+                            :foreground (face-background 'default)
+                            :inverse-video nil)
+        ;; Corrects (and improves) org-mode's native fontification.
+        (doom-themes-org-config)
+        ;; Enable custom treemacs theme (all-the-icons must be installed!)
+        (doom-themes-treemacs-config))
+
+      ;; Make certain buffers grossly incandescent
+      (use-package solaire-mode
+        :functions persp-load-state-from-file
+        :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+               (minibuffer-setup . solaire-mode-in-minibuffer)
+               (after-load-theme . solaire-mode-swap-bg))
+        :config
+        (setq solaire-mode-remap-fringe nil)
+        (solaire-global-mode 1)
+        (solaire-mode-swap-bg)
+        (advice-add #'persp-load-state-from-file
+                    :after #'solaire-mode-restore-persp-mode-buffers)))
+  (progn
+    (ignore-errors (centaur-load-theme centaur-theme))))
 
 ;; Icons
 ;; NOTE: Must run `M-x all-the-icons-install-fonts' manually on Windows
@@ -112,11 +180,35 @@
   (add-to-list 'all-the-icons-mode-icon-alist
                '(gfm-mode all-the-icons-octicon "markdown" :face all-the-icons-blue)))
 
-;; Line numbers and columns
-(use-package display-line-numbers
-  :straight nil
-  :blackout t
-  :hook (after-init . global-display-line-numbers-mode))
+;; Line and Column
+(setq-default fill-column 100)
+(setq column-number-mode t)
+(setq line-number-mode t)
+
+;; Show native line numbers if possible, otherwise use linum
+(if (fboundp 'display-line-numbers-mode)
+    (use-package display-line-numbers
+      :ensure nil
+      :hook (prog-mode . display-line-numbers-mode))
+  (use-package linum-off
+    :demand
+    :defines linum-format
+    :hook (after-init . global-linum-mode)
+    :config
+    (setq linum-format "%4d ")
+
+    ;; Highlight current line number
+    (use-package hlinum
+      :defines linum-highlight-in-all-buffersp
+      :hook (global-linum-mode . hlinum-activate)
+      :custom-face (linum-highlight-face
+                    ((t `(
+                          :inherit default
+                          :background nil
+                          :foreground nil
+                          ))))
+      :init
+      (setq linum-highlight-in-all-buffersp t))))
 
 ;; Mouse & Smooth Scroll
 ;; Scroll one line at a time (less "jumpy" than defaults)
@@ -129,7 +221,6 @@
 
 ;; Display Time
 (use-package time
-  :demand t
   :ensure nil
   :unless (display-graphic-p)
   :hook (after-init . display-time-mode)
@@ -150,8 +241,11 @@
 
 ;; Misc
 (fset 'yes-or-no-p 'y-or-n-p)
+(setq visible-bell t)
 (add-hook 'window-setup-hook #'size-indication-mode)
-(setq ring-bell-function 'ignore) ; Don't play a sound or flash the screen on error
+;; (blink-cursor-mode -1)
+(setq track-eol t)                      ; Keep cursor at end of lines. Require line-move-visual is nil.
+(setq line-move-visual nil)
 (setq inhibit-compacting-font-caches t) ; Don’t compact font caches during GC.
 
 (when sys/macp
@@ -164,16 +258,14 @@
 (when (boundp 'x-gtk-use-system-tooltips)
   (setq x-gtk-use-system-tooltips nil))
 
-;; Install the collection of themes from Doom-Emacs
-(use-package doom-themes
-  :demand t
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-  :config
-  (load-theme 'doom-one t)
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config))
+;; Fullscreen
+;; WORKAROUND: To address blank screen issue with child-frame in fullscreen
+(when (and sys/mac-x-p emacs/>=26p)
+  (setq ns-use-native-fullscreen nil))
+(bind-keys ("C-<f11>" . toggle-frame-fullscreen)
+           ("C-s-f" . toggle-frame-fullscreen) ; Compatible with macOS
+           ("S-s-<return>" . toggle-frame-fullscreen)
+           ("M-S-<return>" . toggle-frame-fullscreen))
 
 (provide 'init-ui)
 

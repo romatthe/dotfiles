@@ -1,0 +1,29 @@
+
+;; ----- amx-history -----
+(
+ all-the-icons-install-fonts
+ cd
+ 5x5
+ amx
+ arp
+ dbx
+ dig
+ dlv
+ erc
+ ert
+ eww
+ ftp
+ gdb
+ irc
+ jdb
+ lsp
+ man
+ mpc
+ pdb
+ pwd
+)
+
+;; ----- amx-data -----
+(
+ (all-the-icons-install-fonts . 1)
+)

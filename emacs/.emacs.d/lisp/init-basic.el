@@ -1,9 +1,9 @@
-;; init-basic.el --- Initialize basic configurations.	-*- lexical-binding: t -*-
+;;; -*- lexical-binding: t -*-
 
-;; Copyright (C) 2019 Vincent Zhang
+;; Copyright (C) 2018-2019 Robin Mattheussen
 
-;; Author: Vincent Zhang <seagle0128@gmail.com>
-;; URL: https://github.com/seagle0128/.emacs.d
+;; Author: Robin Mattheussen <robin.mattheussen@gmail.com>
+;; URL: https://github.com/romatthe/dotfiles
 
 ;; This file is not part of GNU Emacs.
 ;;
@@ -25,68 +25,38 @@
 
 ;;; Commentary:
 ;;
-;; Basic configuration.
+;; Base configuration
 ;;
 
 ;;; Code:
 
 (eval-when-compile
-  (require 'init-const)
-  (require 'init-custom))
+  (require 'init-sysinfo))
 
 ;; Personal information
-(setq user-full-name centaur-full-name)
-(setq user-mail-address centaur-mail-address)
-
-;; Key Modifiers
-(cond
- (sys/win32p
-  ;; make PC keyboard's Win key or other to type Super or Hyper
-  ;; (setq w32-pass-lwindow-to-system nil)
-  (setq w32-lwindow-modifier 'super)    ; Left Windows key
-  (setq w32-apps-modifier 'hyper)       ; Menu/App key
-
-  ;; (w32-register-hot-key [s-])
-  (w32-register-hot-key [s-t]))
- ((and sys/macp (eq window-system 'mac))
-  ;; Compatible with Emacs Mac port
-  (setq mac-option-modifier 'meta)
-  (setq mac-command-modifier 'super)
-
-  (bind-keys ([(super a)] . mark-whole-buffer)
-             ([(super c)] . kill-ring-save)
-             ([(super l)] . goto-line)
-             ([(super q)] . save-buffers-kill-emacs)
-             ([(super s)] . save-buffer)
-             ([(super v)] . yank)
-             ([(super w)] . delete-frame)
-             ([(super z)] . undo))))
+(setq user-full-name "Robin Mattheussen")
+(setq user-mail-address "robin.mattheussen@gmail.com")
 
 ;; Environment
-(when (or sys/mac-x-p sys/linux-x-p)
-  (use-package exec-path-from-shell
-    :init
-    (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "PYTHONPATH" "GOPATH"))
-    (setq exec-path-from-shell-arguments '("-l"))
-    (exec-path-from-shell-initialize)))
-
-;; Start server
-(use-package server
-  :ensure nil
-  :hook (after-init . server-mode))
+(use-package exec-path-from-shell
+  :init
+  (setq exec-path-from-shell-check-startup-files nil)
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "PYTHONPATH" "GOPATH"))
+  (setq exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize))
 
 ;; History
 (use-package saveplace
-  :ensure nil
+  :demand t
   :hook (after-init . save-place-mode))
 
+;; Recent files
 (use-package recentf
-  :ensure nil
+  :demand t
   :hook (after-init . recentf-mode)
-  :init
-  (setq recentf-max-saved-items 200)
-  (setq recentf-exclude '((expand-file-name package-user-dir)
+  :custom
+  (recentf-max-saved-items 200)
+  (recentf-exclude '((expand-file-name package-user-dir)
                           ".cache"
                           ".cask"
                           ".elfeed"
@@ -99,17 +69,19 @@
                           "url"
                           "COMMIT_EDITMSG\\'")))
 
+;; Save the history of buffers
 (use-package savehist
-  :ensure nil
+  :demand t
   :hook (after-init . savehist-mode)
-  :init (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
-              history-length 1000
-              savehist-additional-variables '(mark-ring
-                                              global-mark-ring
-                                              search-ring
-                                              regexp-search-ring
-                                              extended-command-history)
-              savehist-autosave-interval 300))
+  :custom
+  (enable-recursive-minibuffers t "Allow commands in minibuffers")
+  (history-length 1000)
+  (savehist-additional-variables '(mark-ring
+				   global-mark-ring
+				   search-ring
+				   regexp-search-ring
+				   extended-command-history))
+  (savehist-autosave-interval 300))
 
 (provide 'init-basic)
 

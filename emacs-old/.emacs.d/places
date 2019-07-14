@@ -1,0 +1,17 @@
+;;; -*- coding: utf-8 -*-
+(("/home/romatthe/.emacs.d/persp-confs/persp-auto-save" . 826)
+ ("/home/romatthe/.dotfiles/emacs/.emacs.d/lisp/init-edit.el" . 3139)
+ ("/home/romatthe/.dotfiles/emacs/.emacs.d/amx-items" . 31)
+ ("/home/romatthe/.dotfiles/emacs/.emacs.d/"
+  (dired-filename . "/home/romatthe/.dotfiles/emacs/.emacs.d/lisp"))
+ ("/home/romatthe/.dotfiles/emacs/.emacs.d/lisp/"
+  (dired-filename . "/home/romatthe/.dotfiles/emacs/.emacs.d/lisp/init-edit.el"))
+ ("/home/romatthe/.dotfiles/emacs/.emacs.d/lisp/init-basic.el" . 1068)
+ ("/home/romatthe/.emacs.d/.cache/treemacs-persist" . 21)
+ ("/home/romatthe/.dotfiles/xmonad/.xmonad/xmonad.hs" . 2647)
+ ("/home/romatthe/.dotfiles/polybar/.config/polybar/config.ini" . 9311)
+ ("/home/romatthe/.dotfiles/xmonad/.xmonad/lib/Config/Options.hs" . 555)
+ ("/home/romatthe/.dotfiles/xmonad/.xmonad/lib/Apps/Alias.hs" . 79)
+ ("/home/romatthe/.dotfiles/xmonad/.xmonad/stack.yaml" . 81)
+ ("/home/romatthe/.dotfiles/polybar/.config/polybar/user_modules.ini" . 8369)
+ ("/home/romatthe/.dotfiles/emacs/.emacs.d/custom.el" . 1381))
