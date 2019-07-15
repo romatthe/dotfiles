@@ -34,7 +34,7 @@
   :blackout t
   :defines (company-dabbrev-ignore-case company-dabbrev-downcase)
   :commands company-abort
-  :bind (("C-SPC" . company-complete)
+  :bind (("C-SPC" . company-manual-begin)
          :map company-active-map
          ("C-p" . company-select-previous)
          ("C-n" . company-select-next)

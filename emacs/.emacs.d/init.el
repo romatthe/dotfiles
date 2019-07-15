@@ -61,4 +61,5 @@
 (require 'init-ivy)
 (require 'init-company)
 
-
+;; Specific languages
+(require 'init-lang-common-lisp)
