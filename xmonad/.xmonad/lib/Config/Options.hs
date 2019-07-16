@@ -29,7 +29,7 @@ options = Options
   }
 
 spaces' :: [[Char]]
-spaces' = [ "TERM", "INET", "DEV", "ENT", "PLAY", "TOOL"]
+spaces' = [ "TERM", "INET", "CODE", "GAME", "PLAY", "TOOL"]
 -- spaces' = ws $ [ "TERM", "INET", "DEV", "ENT", "PLAY", "TOOL"]
 --   where
 --     ws l =

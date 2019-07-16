@@ -12,8 +12,8 @@ alert = #bd2c40
 margin-top = 2
 margin-bottom = 2
 
-[bar/screen]
-monitor = HDMI1
+[bar/laptop-home]
+; monitor = HDMI1
 width = 100%
 height = 28
 offset-x = 0
@@ -37,18 +37,17 @@ padding-right = 3
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = "Source Code Pro:size=8;1"
-font-1 = "FontAwesome:pixelsize=8;1"
+font-0 = "Source Code Pro:size=10;1"
+font-1 = "FontAwesome:pixelsize=10;1"
 
-modules-left = stumpwmgroups volume mpm
+modules-left = xmonad volume
 modules-center = 
-; modules-right = compton redshift cpu memory wlan muunreads battery date powermenu
-modules-right = cpu memory wlan muunreads battery date powermenu
+modules-right = cpu memory wlan battery date powermenu
 
 enable-ipc = true
 
 [bar/laptop]
-monitor = eDP1
+; monitor = LVDS1
 width = 100%
 height = 24
 offset-x = 0
@@ -150,7 +149,7 @@ label = %percentage_used%%
 
 [module/wlan]
 type = internal/network
-interface = wlo1
+interface = wlp7s0
 interval = 3
 
 format-connected = "<label-connected> "

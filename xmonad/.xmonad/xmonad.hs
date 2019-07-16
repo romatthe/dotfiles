@@ -99,19 +99,19 @@ myLogHook dbus = def {
     , ppTitle = \i -> ""
     , ppSep = ""
     , ppWsSep = ""
-    , ppCurrent = \i -> "%{T5}%{R} " ++ (w i) ++ "   %{R-}%{T-}"
-    , ppHidden = \i -> " " ++ (w i) ++ " "
+    , ppCurrent = \i -> "%{T5}%{R} " ++ (w i) ++ " %{R-}%{T-}"
+    , ppHidden = \i -> "%{u#ff9900}%{+u} " ++ (w i) ++ " %{u-}"
     , ppHiddenNoWindows = \i -> " " ++ (w i) ++ " "
     , ppVisibleNoWindows = Just (\i -> " " ++ (w i) ++ " ")
     , ppLayout = \l -> ""
     }
     where
-        w "TERM" = "%{T4}\xf120%{T-}"
-        w "INET" = "%{T4}\xf268%{T-}"
-        w "DEV"  = "%{T4}\xf1cb%{T-}"
-        w "ENT"  = "%{T4}\xf11b%{T-}"
-        w "PLAY" = "%{T4}\xf001%{T-}"
-        w "TOOL" = "%{T4}\xf0ad%{T-}"
+        w "TERM" = "%{T4}\xf120 TERM%{T-}"
+        w "INET" = "%{T4}\xf268 INET%{T-}"
+        w "CODE" = "%{T4}\xf1cb CODE%{T-}"
+        w "GAME" = "%{T4}\xf11b GAME%{T-}"
+        w "PLAY" = "%{T4}\xf001 PLAY%{T-}"
+        w "TOOL" = "%{T4}\xf0ad TOOL%{T-}"
         w i      = i
 
 wsBar      =
