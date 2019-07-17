@@ -55,11 +55,24 @@
 ;; Without this comment Emacs25 adds (package-initialize) here
 (require 'init-package)
 
+;; Core
 (require 'init-basic)
 (require 'init-ui)
 (require 'init-editing)
 (require 'init-ivy)
-(require 'init-company)
+(require 'init-dashboard)
+(require 'init-dired)
+(require 'init-highlight)
+(require 'init-ibuffer)
+(require 'init-treemacs)
+(require 'init-window)
 
-;; Specific languages
+;; Programming Tools
+(require 'init-company)
+(require 'init-git)
+(require 'init-flycheck)
+(require 'init-lsp)
+(require 'init-projectile)
+
+;; Programming Languages
 (require 'init-lang-common-lisp)

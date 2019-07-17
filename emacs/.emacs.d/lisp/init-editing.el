@@ -72,14 +72,17 @@
 
 ;; Delete selection if you insert
 (use-package delsel
-  :straight nil
-  :hook (after-init . delete-selection-mode))
+  :straight t
+  :demand t
+  :config (delete-selection-mode))
 
 ;; Automatically reload files was modified by external program
 (use-package autorevert
   :straight nil
+  :demand t
   :blackout t
-  :hook (after-init . global-auto-revert-mode))
+  :config
+  (global-auto-revert-mode))
 
 ;; Jump to things in Emacs tree-style
 (use-package avy

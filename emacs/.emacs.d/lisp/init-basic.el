@@ -39,10 +39,11 @@
 
 ;; Environment
 (use-package exec-path-from-shell
+  :custom
+  (exec-path-from-shell-check-startup-files nil)
+  (exec-path-from-shell-variables '("PATH" "MANPATH" "PYTHONPATH" "GOPATH"))
+  (exec-path-from-shell-arguments '("-l"))
   :init
-  (setq exec-path-from-shell-check-startup-files nil)
-  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "PYTHONPATH" "GOPATH"))
-  (setq exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
 ;; History
@@ -82,6 +83,7 @@
 				   regexp-search-ring
 				   extended-command-history))
   (savehist-autosave-interval 300))
+
 
 (provide 'init-basic)
 

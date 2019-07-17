@@ -92,7 +92,7 @@
                            line)
       line))
   (advice-add #'company-box--make-line :override #'my-company-box--make-line)
-  
+
   ;; Prettify icons
   (defun my-company-box-icons--elisp (candidate)
     (when (derived-mode-p 'emacs-lisp-mode)
@@ -104,7 +104,7 @@
               ((symbolp sym) 'Text)
               (t . nil)))))
   (advice-add #'company-box-icons--elisp :override #'my-company-box-icons--elisp)
-  
+
   (with-eval-after-load 'all-the-icons
     (declare-function all-the-icons-faicon 'all-the-icons)
     (declare-function all-the-icons-material 'all-the-icons)
