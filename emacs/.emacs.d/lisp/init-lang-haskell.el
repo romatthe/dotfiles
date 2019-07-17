@@ -46,6 +46,10 @@
   :config
   (add-to-list 'completion-ignored-extensions ".hi"))
 
+(use-package lsp-haskell
+  :after haskell-mode
+  :hook (haskell-mode . lsp))
+
 
 (provide 'init-lang-haskell)
 
