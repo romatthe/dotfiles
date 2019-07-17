@@ -84,6 +84,11 @@
 				   extended-command-history))
   (savehist-autosave-interval 300))
 
+(use-package helpful
+  :bind (("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)))
+
 
 (provide 'init-basic)
 

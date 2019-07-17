@@ -25,32 +25,29 @@
 
 ;;; Commentary:
 ;;
-;; Configuration for working with the Common Lisp language
+;; Configuration for working with the Haskell language
 ;;
 
 ;;; Code:
 
-;; Defer the existing lisp-mode in Emacs
-(use-package lisp-mode
-  :straight nil
-  :defer t)
-
-(use-package sly
-  ;:mode (".lisp$" ".cl$")
+(use-package haskell-mode
+  :bind (:map haskell-mode-map
+              ;; this is set to use cabal for dante users and stack for intero users:
+              ("b" . haskell-process-cabal-build)
+              ("c" . haskell-cabal-visit-file)
+              ("h" . haskell-hide-toggle)
+              ("H" . haskell-hide-toggle-all))
+  :hook ((haskell-mode-hook . haskell-collapse-mode)
+         (haskell-mode-hook . interactive-haskell-mode))
   :custom
-  (inferior-lisp-program "ros -Q run" "Preferred Common Lisp implementation")
+  (haskell-process-suggest-remove-import-lines t)
+  (haskell-process-auto-import-loaded-modules t)
+  (haskell-process-show-overlays nil) ; redundant with flycheck
   :config
-  (load (expand-file-name "~/.roswell/helper.el")))
-
-(use-package sly-macrostep)
-
-(use-package sly-repl-ansi-color
-  :defer t
-  :init
-  (add-to-list 'sly-contribs 'sly-repl-ansi-color nil #'eq))
+  (add-to-list 'completion-ignored-extensions ".hi"))
 
 
-(provide 'init-lang-common-lisp)
+(provide 'init-lang-haskell)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; init-lang-common-lisp.el ends here
+;;; init-lang-haskell.el ends here

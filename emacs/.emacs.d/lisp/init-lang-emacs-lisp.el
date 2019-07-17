@@ -25,32 +25,34 @@
 
 ;;; Commentary:
 ;;
-;; Configuration for working with the Common Lisp language
+;; Configuration for working with the Emacs Lisp language
 ;;
 
 ;;; Code:
 
-;; Defer the existing lisp-mode in Emacs
-(use-package lisp-mode
+(use-package elisp-mode
   :straight nil
-  :defer t)
+  :bind (:map emacs-lisp-mode-map
+              ("C-c C-x" . ielm)
+              ("C-c C-c" . eval-defun)
+              ("C-c C-b" . eval-buffer)
+              ("C-c C-d" . helpful-at-point)))
 
-(use-package sly
-  ;:mode (".lisp$" ".cl$")
-  :custom
-  (inferior-lisp-program "ros -Q run" "Preferred Common Lisp implementation")
-  :config
-  (load (expand-file-name "~/.roswell/helper.el")))
+;; Interactive macro expander
+(use-package macrostep
+  :bind (:map emacs-lisp-mode-map
+              ("C-c e" . macrostep-expand)
+              :map lisp-interaction-mode-map
+              ("C-c e" . macrostep-expand)))
 
-(use-package sly-macrostep)
+;; Show function arglist or variable docstring
+;; `global-eldoc-mode' is enabled by default.
+(use-package eldoc
+  :straight nil
+  :blackout t)
 
-(use-package sly-repl-ansi-color
-  :defer t
-  :init
-  (add-to-list 'sly-contribs 'sly-repl-ansi-color nil #'eq))
 
-
-(provide 'init-lang-common-lisp)
+(provide 'init-lang-emacs-lisp)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; init-lang-common-lisp.el ends here
+;;; init-lang-emacs-lisp.el ends here

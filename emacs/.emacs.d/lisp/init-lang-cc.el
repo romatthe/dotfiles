@@ -25,32 +25,22 @@
 
 ;;; Commentary:
 ;;
-;; Configuration for working with the Common Lisp language
+;; Configuration for working with the C and C++ languages
 ;;
 
 ;;; Code:
 
-;; Defer the existing lisp-mode in Emacs
-(use-package lisp-mode
-  :straight nil
-  :defer t)
-
-(use-package sly
-  ;:mode (".lisp$" ".cl$")
-  :custom
-  (inferior-lisp-program "ros -Q run" "Preferred Common Lisp implementation")
-  :config
-  (load (expand-file-name "~/.roswell/helper.el")))
-
-(use-package sly-macrostep)
-
-(use-package sly-repl-ansi-color
-  :defer t
-  :init
-  (add-to-list 'sly-contribs 'sly-repl-ansi-color nil #'eq))
+(use-package ccls
+  :hook ((c-mode c++-mode objc-mode) .
+         (lambda () (require 'ccls) (lsp))))
 
 
-(provide 'init-lang-common-lisp)
+;; Modern C++ syntax highlighting
+(use-package modern-cpp-font-lock
+  :hook (c++-mode . modern-c++-font-lock-mode))
+
+
+(provide 'init-lang-cc)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; init-lang-common-lisp.el ends here
+;;; init-lang-cc.el ends here
