@@ -114,27 +114,6 @@ myLogHook dbus = def {
         w "TOOL" = "%{T4}\xf0ad TOOL%{T-}"
         w i      = i
 
-wsBar      =
-  "dzen2 -dock -ta l      \
-  \ -bg '" ++ barBgColor  ++ "' \
-  \ -fg '" ++ barFgColor  ++ "' \
-  \ -w  '" ++ leftBarSize ++ "' \
-  \ -h  '" ++ barHeight   ++ "' \
-  \ -x  '" ++ leftBarPos  ++ "' \
-  \ -fn '" ++ font        ++ "' "
-
-statsPanel      =
-  "dzen2 -dock -ta r      \
-  \ -bg '" ++ barBgColor   ++ "'\
-  \ -fg '" ++ barFgColor   ++ "'\
-  \ -w  '" ++ rightBarSize ++ "'\
-  \ -h  '" ++ barHeight    ++ "'\
-  \ -x  '" ++ rightBarPos  ++ "'\
-  \ -fn '" ++ font         ++ "'"
-
-statusConfig  = "conky -c ~/.xmonad/status.conf"
-statsBar      = statusConfig ++ " | " ++ statsPanel
-
 ---- Hooks
 eventHook     = fullscreenEventHook
 layoutHook'   = myLayoutHook
@@ -144,13 +123,9 @@ manageHook'   = myManageHook
 -- Layout Hook
 myLayoutHook =
   avoidStruts
-  $ smartBorders
   $ mkToggle (NOBORDERS ?? FULL ?? EOT)
-  $ standardLayout
-  where
-    standardLayout =
-      renamed [CutWordsLeft 2] $
-      smartSpacingWithEdge 8 $ layoutHook defaultConfig
+  $ spacing 5
+  $ layoutHook def
 
 -- Manage Hook
 myManageHook =
