@@ -94,8 +94,8 @@ prompt_custom_node() {
 
 prompt_custom_rust() {
     # Extended globbing is required for the (#q) pattern in `test -n`
-    setopt local_options EXTENDED_GLOB	
-    
+    setopt local_options EXTENDED_GLOB
+
     # Check if any Rust files or a Cargo TOML are present
     [[ -f Cargo.toml || -n *.rs(#qN^/) ]] || return
     # Check if the rustc compiler is available
@@ -107,7 +107,7 @@ prompt_custom_rust() {
 }
 
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_prompt_start status host dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(custom_rust_version custom_golang_version custom_haskell_version custom_node_version custom_docker_version root_indicator time)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(root_indicator time)
 POWERLEVEL9K_HOME_ICON=''
 POWERLEVEL9K_HOME_SUB_ICON=''
 POWERLEVEL9K_FOLDER_ICON=''
@@ -138,7 +138,7 @@ zplug "zsh-users/zsh-completions"
 zplug "jimeh/zsh-peco-history"
 zplug "lukechilds/zsh-nvm"
 # Only enable Powerlevel9k when we're not inside and emacs terminal
-[[ -z $EMACS ]] && zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+[[ -z $EMACS ]] && zplug romkatv/powerlevel10k, use:powerlevel10k.zsh-theme
 
 # Install packages that have not been installed yet
 if ! zplug check --verbose; then
