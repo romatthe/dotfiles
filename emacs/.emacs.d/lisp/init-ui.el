@@ -35,7 +35,7 @@
 
 ;; Default font
 ;;(add-to-list 'default-frame-alist '(font . "Iosevka-11"))
-(set-frame-font "Iosevka-11" nil t)
+(set-frame-font "Hack-11" nil t)
 
 (when sys/mac-x-p
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
