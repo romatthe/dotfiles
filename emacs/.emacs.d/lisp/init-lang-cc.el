@@ -34,7 +34,6 @@
   :hook ((c-mode c++-mode objc-mode) .
          (lambda () (require 'ccls) (lsp))))
 
-
 ;; Modern C++ syntax highlighting
 (use-package modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))

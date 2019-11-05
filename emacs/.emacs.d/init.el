@@ -75,7 +75,7 @@
 (require 'init-projectile)
 
 ;; Programming Languages
-(require 'init-lang-common-lisp)
+;; (require 'init-lang-common-lisp)
 (require 'init-lang-emacs-lisp)
 (require 'init-lang-cc)
 (require 'init-lang-haskell)
