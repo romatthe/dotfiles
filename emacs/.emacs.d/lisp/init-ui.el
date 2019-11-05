@@ -175,6 +175,7 @@
   (doom-themes-treemacs-config)
   (doom-themes-org-config))
 
+;; Popup for showing key completions
 (use-package which-key
   :demand t
   :config
