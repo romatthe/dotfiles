@@ -1,198 +1,119 @@
-import Control.Monad
-import Data.List
+import System.IO
+import System.Exit
 
 import XMonad
+import XMonad.Actions.DynamicWorkspaces
 import XMonad.Actions.Navigation2D
+import XMonad.Actions.CycleWS
+import XMonad.Actions.FloatKeys
+import XMonad.Config.Desktop
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.EwmhDesktops (fullscreenEventHook)
+import XMonad.Hooks.FloatNext
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.SetWMName
-import XMonad.Hooks.UrgencyHook
-
-import XMonad.Util.EZConfig (additionalKeys)
-import XMonad.Util.Run (spawnPipe, safeSpawn)
-import XMonad.Util.SpawnOnce (spawnOnce)
-
+import XMonad.Hooks.EwmhDesktops
+-- import XMonad.Util.NamedScratchpad
 import XMonad.Layout
-import XMonad.Layout.PerWorkspace
 import XMonad.Layout.NoBorders
+import XMonad.Layout.Maximize
+import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
-import XMonad.Layout.MultiToggle
-import XMonad.Layout.MultiToggle.Instances
-import XMonad.Layout.Renamed
-import qualified XMonad.DBus as D
-import qualified XMonad.StackSet as W
-import XMonad.Util.EZConfig
-import Graphics.X11
+import XMonad.Util.Loggers
+import XMonad.Util.NamedWindows (getName)
+import XMonad.Util.Font
+import XMonad.Util.Run
 import Graphics.X11.ExtraTypes.XF86
-import Graphics.X11.Xinerama
-import System.IO
-import XMonad.Actions.CycleWS
 
-import Config.Keys
-import Config.Options
-import Hooks.Log
-import Theme.Nord
+import Control.Monad (forM_, join)
 
+import Data.Char
+import Data.List (sortBy)
+import Data.Function (on)
+import Data.Bits ((.|.))
+import qualified XMonad.StackSet as W
+import qualified Data.Map as M
+
+main :: IO ()
 main = do
-  dbus <- D.connect
-  D.requestAccess dbus
-  xmonad
-    $ docks
-    $ withUrgencyHook NoUrgencyHook
-    $ defaultConfig
-      -- Simple stuff
-      { terminal           = term options
-      , focusFollowsMouse  = ffm options
-      , modMask            = mask options
-      , workspaces         = spaces options
-      -- Theme
-      , normalBorderColor  = unfocused theme
-      , focusedBorderColor = focused theme
-      , borderWidth        = border theme
+  --spawn xmproc
+  xmonad $ ewmh $ defaults { handleEventHook = handleEventHook desktopConfig }
 
-      -- Lets hook up
-      , handleEventHook    = eventHook
-      --, logHook            = logHook' wsPanel
-      --, logHook            = wsLogHook
-      , logHook            = dynamicLogWithPP (myLogHook dbus)
-      , layoutHook         = layoutHook'
-      -- , manageHook         = manageHook'
-      , manageHook         = manageDocks <+> (isFullscreen --> doFullFloat) <+> manageHook defaultConfig
-      , startupHook        = starts options
-      } `additionalKeysP` keybindings
+-- Border Styling
+myBorderWidth = 2
+myNormalBorderColor = "#BFBFBF"
+myFocusedBorderColor = "#89DDFF"
 
----- Simple stuff
-modm          = mod4Mask
-mouseFocus    = True
-keyboard      = myKeys
+-- State
+myTerminal = "gnome-terminal"
+-- CHANGE THIS!!!!!
+myLauncher = "rofi -show drun"
+myScreenshot = "shot" -- custom script '.local/bin/shot'
 
------ Appearance
-bdrSize       = 5
-bdrNormal     = bgColor
-bdrFocus      = fgColor
-font          = "Misc Termsyn.Icons:size=13"
-monitorSize   = 1920
-monitor n     = show(round(monitorSize * n))
+-- Set the MOD key to the Super key
+modm = mod4Mask
 
------ WHAT COLOR?
-bgColor       = "#383644"
-fgColor       = "#FCEBDB"
-wsBgColor     = "#B79288"
-wsFgColor     = "#FFFFFF"
-barBgColor    = "#383644"
-barFgColor    = "#E2DED4"
-hintColor     = "#AA3355"
-layoutColor   = "#9D3E58"
+-- Workspaces
+workspaceNames =
+  [ "Home"
+  , "WWW"
+  , "Code"
+  , "Play"
+  , "Misc"
+  ]
 
----- Panel
-leftBarSize   = monitor 0.7
-rightBarSize  = monitor 0.3
-leftBarPos    = "0"
-rightBarPos   = leftBarSize
-barHeight     = "26"
+xmproc = "polybar main" --statusbar
 
--- loghook
-myLogHook dbus = def {
-      ppOutput = D.send dbus
-    , ppTitle = \i -> ""
-    , ppSep = ""
-    , ppWsSep = ""
-    , ppCurrent = \i -> "%{T5}%{R} " ++ (w i) ++ " %{R-}%{T-}"
-    , ppHidden = \i -> "%{u#ff9900}%{+u} " ++ (w i) ++ " %{u-}"
-    , ppHiddenNoWindows = \i -> " " ++ (w i) ++ " "
-    , ppVisibleNoWindows = Just (\i -> " " ++ (w i) ++ " ")
-    , ppLayout = \l -> ""
-    }
-    where
-        w "TERM" = "%{T4}\xf120 TERM%{T-}"
-        w "INET" = "%{T4}\xf268 INET%{T-}"
-        w "CODE" = "%{T4}\xf1cb CODE%{T-}"
-        w "GAME" = "%{T4}\xf11b GAME%{T-}"
-        w "PLAY" = "%{T4}\xf001 PLAY%{T-}"
-        w "TOOL" = "%{T4}\xf0ad TOOL%{T-}"
-        w i      = i
-
----- Hooks
-eventHook     = fullscreenEventHook
-layoutHook'   = myLayoutHook
-logHook'      = myLogHook
-manageHook'   = myManageHook
+-- gaps (border / window spacing)
+gaps = spacingRaw True (Border 0 0 0 0) False (Border 8 8 8 8) True
+myWorkspaces = workspaceNames
 
 -- Layout Hook
-myLayoutHook =
-  avoidStruts
-  $ mkToggle (NOBORDERS ?? FULL ?? EOT)
-  $ spacing 5
-  $ layoutHook def
+myLayout = maximize (ResizableTall 1 (3 / 100) (1 / 2) [] ||| Full)
 
--- Manage Hook
-myManageHook =
-  composeAll . concat $
-  [ [ className =? c --> doShift (w !! 1) | c <- inetApp ]
-  , [ className =? c --> doShift (w !! 2) | c <- devApp ]
-  , [ className =? c --> doShift (w !! 3) | c <- entApp ]
-  , [ className =? c --> doShift (w !! 4) | c <- playApp ]
-  , [ className =? c --> doFloat          | c <- floatingApp ]
-  , [ className =? c --> doIgnore         | c <- ignoreApp ]
-  , [ isDialog       --> doCenterFloat ]
-  , [ isRole         --> doCenterFloat ]
-  , [ manageDocks ]
-  , [ manageHook def ]
+-- myManageHook
+myManageHook = composeAll . concat $
+  [ [className =? "Emacs" --> doShift "Code"]
+  , [className =? "Chrome" --> doShift "WWW"]
   ]
-  where
-    w = spaces options
-    isRole = stringProperty "WM_WINDOW_ROLE" =? "pop-up"
-    inetApp = ["Chromium"]
-    devApp =
-      [ "SecureCRT", "GNS3", "VirtualBox Manager"
-      , "VirtualBox Machine", "jetbrains-studio"
-      , "Code", "oni"
-      ]
-    entApp = ["MPlayer", "smplayer", "mpv", "Gimp"]
-    playApp = ["player", "Genymotion"]
-    floatingApp = ["SecureCRT", "TeamViewer", "Xmessage"]
-    ignoreApp = ["desktop", "desktop_window", "stalonetray", "trayer"]
 
--- Keymapping
-myKeys =
-  [ ((m, xK_b), spawn "google-chrome-stable")
-  , ((m, xK_space), spawn "rofi -show drun -theme romatthe")
-  , ((m, xK_Return), spawn $ term options)
-  , ((m, xK_w), kill)
-  , ((m, xK_f), sendMessage $ Toggle FULL)
-  , ((m, xK_Right), windowGo R False)
-  , ((m, xK_Left),  windowGo L False)
-  , ((m, xK_Up),    windowGo U False)
-  , ((m, xK_Down),  windowGo D False)
-  , ((m, xK_s), sendMessage ToggleStruts)
-  , ((m, xK_BackSpace), focusUrgent)
-  , ((m, xK_equal), toggleWS)
-  , ((m, xK_grave), toggleWS)
-  , ((m .|. shiftMask, xK_t), sendMessage NextLayout)
-  -- , ((m, xK_Caps_Lock), sendMessage $ Toggle FULL)
-  , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -10")
-  , ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +10")
-  , ((0, xK_Print), spawn "maim -s | xclip -selection clipboard -t image/png")
-  , ((s, xK_Print), spawn "maim | xclip -selection clipboard -t image/png")
+myNewManageHook = composeAll
+  [ myManageHook
+  , floatNextHook
+  , manageHook desktopConfig
   ]
-  where
-    m = modm
-    s = shiftMask
-    c = controlMask
-    dmenu =
-      "dmenu_run -i \
-      \ -fn '" ++ fn ++ "' \
-      \ -w '" ++ w ++ "' \
-      \ -h '" ++ h ++ "' \
-      \ -x '" ++ x ++ "' \
-      \ -nb '" ++ nb ++ "' \
-      \ -sb '" ++ sb ++ "'"
-      where
-        w = monitor 0.3
-        x = monitor 0.7
-        h = "26"
-        fn = font
-        nb = bgColor
-        sb = layoutColor
+
+myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
+myKeys conf@(XConfig { XMonad.modMask = modMask }) =
+  M.fromList
+    $  [ ((modm, xK_Return)            , spawn myTerminal)
+       , ((modm, xK_space)             , spawn myLauncher)
+       , ((modm, xK_b)                 , spawn "google-chrome-stable")
+       , ((modm, xK_w)                 , kill)
+       , ((modm, xK_Tab)               , nextWS)
+       , ((modm .|. shiftMask, xK_Tab) , prevWS)
+       -- movement
+       , ((modm, xK_Right), windowGo R False)
+       , ((modm, xK_Left),  windowGo L False)
+       , ((modm, xK_Up),    windowGo U False)
+       , ((modm, xK_Down),  windowGo D False)
+       -- toggle fullscreen (really just lower status bar below everything)
+       , ((modm, xK_f), sendMessage ToggleStruts)
+       , ((modm, xK_g), toggleWindowSpacingEnabled)
+       -- audio keybindings
+       , ((0, xF86XK_AudioRaiseVolume)   , spawn "amixer set Master 3+")
+       , ((0, xF86XK_AudioLowerVolume)   , spawn "amixer set Master 3-")
+       , ((0, xF86XK_AudioMute)          , spawn "amixer set Master toggle")
+       ]
+
+defaults =
+  docks $ desktopConfig { borderWidth = myBorderWidth
+                        , normalBorderColor  = myNormalBorderColor
+                        , focusedBorderColor = myFocusedBorderColor
+                        , focusFollowsMouse  = False
+                        , modMask            = modm
+                        , terminal           = myTerminal
+                        , workspaces         = myWorkspaces
+                        , keys               = myKeys
+                        , manageHook         = myNewManageHook <+> manageDocks
+                        , layoutHook         = avoidStruts $ gaps $ smartBorders $ myLayout
+                        }
