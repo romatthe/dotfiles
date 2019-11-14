@@ -12,7 +12,6 @@ import XMonad.Hooks.FloatNext
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
--- import XMonad.Util.NamedScratchpad
 import XMonad.Layout
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Maximize
