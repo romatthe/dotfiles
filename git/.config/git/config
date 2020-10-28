@@ -1,9 +1,7 @@
 [user]
         name = Robin Mattheussen
-        email = robin.mattheussen@gmail.com
+        email = me@romatthe.dev
         signingkey = 8DC3890E89EDE9DF
-[core]
-	editor = emacsclient --create-frame
 [credential]
         helper = libsecret
 [commit]
@@ -13,4 +11,4 @@
 [merge]
 	tool = vimdiff
 [gpg]
-        program = /usr/bin/gpg2
+        program = /usr/bin/gpg
