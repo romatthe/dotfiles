@@ -5,7 +5,7 @@
 [core]
 	editor = emacsclient --create-frame
 [credential]
-        helper = libsecret
+        helper = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
 [commit]
         gpgsign = true
 [diff]
